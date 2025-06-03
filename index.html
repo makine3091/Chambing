@@ -1,0 +1,2889 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1200, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Krea IMPORMADERAS</title>
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <style>
+        :root {
+            --main-bg: #181f2a;
+            --menu-bg: #2C3E50;
+            --accent: #27AE60;
+            --accent-dark: #1F8A4D;
+            --white: #fff;
+            --gray: #808080;
+            --blue: #007BFF;
+            --blue-dark: #0056b3;
+            --border-radius: 6px;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            display: flex;
+            background: var(--main-bg);
+        }
+
+        #menu,
+        #rotation-controls {
+            position: fixed;
+            top: 0;
+            background: var(--menu-bg);
+            color: var(--white);
+            padding: 15px;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.3);
+            z-index: 100;
+            overflow-y: auto;
+        }
+
+        #menu {
+            left: 0;
+            width: 200px;
+            height: 90vh;
+        }
+
+        #rotation-controls {
+            right: 0;
+            width: 220px;
+            height: 89vh;
+            border-left: 2px solid #222e3c;
+            z-index: 101;
+        }
+
+        #scene-container {
+            flex-grow: 1;
+            margin-left: 220px;
+            height: 100vh;
+            background: var(--main-bg);
+        }
+
+        h3 {
+            font-size: 16px;
+            margin: 18px 0 8px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+            padding-bottom: 4px;
+        }
+
+        label {
+            display: block;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 5px;
+            margin-top: 5px;
+            border-radius: var(--border-radius);
+            border: none;
+            font-size: 14px;
+        }
+
+        input[type="number"] {
+            width: 80px;
+            min-width: 60px;
+            max-width: 120px;
+            text-align: center;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        button {
+            display: block;
+            width: 100%;
+            margin: 10px 0;
+            padding: 10px;
+            font-size: 14px;
+            font-weight: bold;
+            color: var(--white);
+            background: linear-gradient(45deg, var(--accent), #298b54);
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            background: linear-gradient(45deg, var(--accent-dark), #0E4021);
+            transform: scale(1.05);
+        }
+
+        button:active {
+            transform: scale(0.95);
+        }
+
+        #model-actions {
+            position: fixed;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(44, 62, 80, 0.9);
+            padding: 10px;
+            border-radius: 8px;
+            display: flex;
+            gap: 10px;
+            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3);
+            z-index: 101;
+        }
+
+        #model-actions button {
+            width: auto;
+            padding: 10px 15px;
+            background: linear-gradient(45deg, var(--accent), var(--accent-dark));
+        }
+
+        #textureGallery {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            max-width: 180px;
+        }
+
+        #textureGallery button {
+            width: 44px;
+            height: 44px;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #scale-controls {
+            position: fixed;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(39, 43, 59, 0.9);
+            padding: 10px 15px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: nowrap;
+            white-space: nowrap;
+            z-index: 101;
+        }
+
+        #fixed-note {
+            position: fixed;
+            bottom: 10px;
+            left: 250px;
+            color: var(--white);
+            background: rgba(30, 30, 30, 0.7);
+            font-size: 12px;
+            padding: 6px 16px;
+            border-radius: var(--border-radius);
+            z-index: 99999;
+            pointer-events: none;
+            line-height: 1.5;
+        }
+
+        #toast {
+            display: none;
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #222e3c;
+            color: var(--white);
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 16px;
+            z-index: 9999;
+            box-shadow: 0 2px 8px #0008;
+        }
+
+        /* Modal ayuda */
+        #helpModal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(24, 31, 42, 0.95);
+            z-index: 99999;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #helpModal>div {
+            background: #222e3c;
+            color: var(--white);
+            padding: 32px 24px;
+            border-radius: 12px;
+            max-width: 480px;
+            width: 90vw;
+            box-shadow: 0 4px 32px #000a;
+            position: relative;
+        }
+
+        #helpModal h2 {
+            margin-top: 0;
+        }
+
+        #helpModal ul {
+            font-size: 16px;
+            line-height: 1.7;
+            padding-left: 18px;
+        }
+
+        #helpModal li {
+            margin-bottom: 8px;
+        }
+
+        #helpModal button {
+            position: absolute;
+            top: 12px;
+            right: 16px;
+            background: none;
+            border: none;
+            color: var(--white);
+            font-size: 22px;
+            cursor: pointer;
+        }
+
+        #helpModal div.contact {
+            margin-top: 18px;
+            font-size: 13px;
+            color: #aaa;
+        }
+
+        /* Hide duplicate button styles */
+        #rotation-controls button,
+        #model-actions button,
+        #scale-controls button {
+            width: 100%;
+        }
+
+        /* Visual para input de textura personalizada */
+        #customTexturePanel label[for="customTextureInput"] {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #fff;
+        }
+
+        #customTexturePanel input[type="file"]+label,
+        #customTexturePanel .custom-upload-btn {
+            display: inline-block;
+            background: linear-gradient(45deg, #27AE60, #298b54);
+            color: #fff;
+            padding: 8px 18px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-bottom: 8px;
+            margin-top: 6px;
+            transition: background 0.2s, transform 0.2s;
+        }
+
+        #customTexturePanel input[type="file"]+label:hover,
+        #customTexturePanel .custom-upload-btn:hover {
+            background: linear-gradient(45deg, #1F8A4D, #0E4021);
+            transform: scale(1.05);
+        }
+
+        /* Galería de texturas personalizadas */
+        #customTextureGallery button {
+            border: 2px solid #27AE60;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px #0004;
+            transition: border 0.2s, box-shadow 0.2s, transform 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        #customTextureGallery button:hover {
+            border: 2px solid #ffd700;
+            box-shadow: 0 4px 16px #27ae6044;
+            transform: scale(1.08);
+        }
+
+        #customTextureGallery button .delete-icon {
+            display: none;
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            background: #222e3cdd;
+            border-radius: 50%;
+            font-size: 16px;
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        #customTextureGallery button:hover .delete-icon {
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="menu">
+        <h3>Dimensiones de la pieza</h3>
+        <label for="height">Alto:</label>
+        <input type="number" id="height" value="5" min="1" step="0.1">
+
+        <label for="width">Ancho:</label>
+        <input type="number" id="width" value="5" min="1" step="0.1">
+
+        <label for="depth">Espesor:</label>
+        <input type="number" id="depth" value="5" min="1" step="0.1">
+
+        <label for="pieceName">Nombre de la pieza:</label>
+        <input type="text" id="pieceName" placeholder="Ejemplo: Base, Soporte, Pilar" />
+
+
+        <button type="button" onclick="addCustomCube()">➕ Agregar</button>
+        <button id="rectangleModeButton">⬛ Rectángulo</button>
+        <button id="pushPullModeBtn">⬛ Empujar/Tirar</button>
+
+        <h3>Eliminar pieza</h3>
+        <button onclick="deleteSelected()">🗑️ Eliminar</button>
+
+        <h3>Vistas</h3>
+        <button onclick="setView('perspective')">🔭 Perspectiva</button>
+        <button onclick="setView('top')">⬆️ Superior</button>
+        <button onclick="setView('front')">⬇️ Frontal</button>
+        <button onclick="setView('right')">➡️ Derecha</button>
+        <button onclick="setView('left')">⬅️ Izquierda</button>
+
+        <h3>Textura</h3>
+        <div id="customTexturePanel" style="margin-top:18px;">
+            <h3>Texturas Personalizadas</h3>
+            <label for="customTextureInput" style="margin-top:8px;">Agregar textura:</label>
+            <input type="file" id="customTextureInput" accept="image/*">
+            <label for="customTextureInput" class="custom-upload-btn">📁 Seleccionar Textura</label>
+            <div id="customTextureGallery" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;"></div>
+        </div>
+        <label>Proveedor:</label>
+        <select id="providerSelect" onchange="updateTextureOptions()">
+            <option value="duratex">Duratex</option>
+            <option value="arauco">Arauco</option>
+            <option value="arkopa">Arkopa</option>
+            <option value="primadera">Primadera</option>
+        </select>
+
+        <div id="toast"
+            style="display:none;position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:#222e3c;color:#fff;padding:12px 24px;border-radius:8px;font-size:16px;z-index:9999;box-shadow:0 2px 8px #0008;">
+        </div>
+        <div id="fixed-note">
+            © Derechos reservados IMPORMADERAS 2025<br>
+            Desarrolladores:<br>
+            Samuel Nuñez Sanchez<br>
+            Nilton Badel Pacheco
+        </div>
+
+        <label>Seleccionar:</label>
+        <div id="textureGallery" style="display: flex; flex-wrap: wrap; gap: 6px; max-width: 180px;"></div>
+
+
+
+        <div id="rotation-controls">
+            <h3>Rotar Pieza</h3>
+            <div class="rotation-group">
+                <button onclick="rotateObject('x', 45)">🔄 X +45°</button>
+                <button onclick="rotateObject('x', -45)">🔄 X -45°</button>
+                <span id="rotationX">X: 0°</span>
+            </div>
+            <div class="rotation-group">
+                <button onclick="rotateObject('y', 45)">🔄 Y +45°</button>
+                <button onclick="rotateObject('y', -45)">🔄 Y -45°</button>
+                <span id="rotationY">Y: 0°</span>
+            </div>
+            <div class="rotation-group">
+                <button onclick="rotateObject('z', 45)">🔄 Z +45°</button>
+                <button onclick="rotateObject('z', -45)">🔄 Z -45°</button>
+                <span id="rotationZ">Z: 0°</span>
+
+                <h3>Seleccionar Modelo 3D</h3>
+                <select id="modelSelect">
+                    <option value="models/Pc/Pc.obj">Pc</option>
+                    <option value="models/modelo2.obj">Modelo 2 (OBJ)</option>
+                    <option value="models/nevera.stl">Nevera</option>
+                </select>
+                <button onclick="loadSelectedModel()">📂 Cargar Modelo</button>
+                <h3>Transformar Modelo</h3>
+                <button onclick="enableRotation()">🔄 Rotar libre</button>
+                <h3>Escalar Modelo</h3>
+                <label for="scaleRange">Tamaño:</label>
+                <input type="range" id="scaleRange" min="0.1" max="5" step="0.1" value="1" oninput="updateScale()">
+                <span id="scaleValue">1x</span>
+                <button onclick="resetScale()">🔄 Restablecer</button>
+                <button type="button" id="copyButton">📋 Copiar</button>
+                <button type="button" id="pasteButton">📑 Pegar</button>
+                <div id="pushPullPanel"
+                    style="display:none;position:fixed;bottom:20px;right:20px;z-index:10000;background:#222e3c;color:#fff;padding:18px 18px 12px 18px;border-radius:10px;box-shadow:0 2px 12px #000a;">
+                    <div style="margin-bottom:8px;font-size:16px;">Empujar/Tirar (Push/Pull)</div>
+                    <div>
+                        <label for="pushPullValue" style="font-size:14px;">Nueva medida (cm):</label>
+                        <input type="number" id="pushPullValue" style="width:80px;margin-left:8px;" step="0.1">
+                        <button id="applyPushPullBtn" style="margin-left:8px;">Aplicar</button>
+                        <button id="cancelPushPullBtn" style="margin-left:8px;">Cancelar</button>
+                    </div>
+                    <div id="pushPullInfo" style="font-size:13px;color:#aaa;margin-top:8px;"></div>
+                </div>
+                <button id="helpButton" onclick="document.getElementById('helpModal').style.display='flex'">❓
+                    Ayuda</button>
+            </div>
+        </div>
+
+        <div id="scale-controls">
+            <h3>Escala a tu medida</h3>
+
+            <label for="scaleHeight">Alto:</label>
+            <input type="number" id="scaleHeight" step="0.1" value="10" oninput="updateCustomScale()">
+
+            <label for="scaleWidth">Ancho:</label>
+            <input type="number" id="scaleWidth" step="0.1" value="10" oninput="updateCustomScale()">
+
+            <label for="scaleDepth">Espesor:</label>
+            <input type="number" id="scaleDepth" step="0.1" value="10" oninput="updateCustomScale()">
+
+        </div>
+
+    </div>
+
+    <div id="model-actions">
+        <button id="exportProjectButton">📤 Exportar Proyecto</button>
+        <button id="importProjectButton">📥 Importar Proyecto</button>
+        <button id="exportMeasuresButton">📊 Exportar Medidas</button>
+        <button id="renderSceneButton">🖼️ Renderizar Imagen</button>
+        <input type="file" id="importProjectInput" accept=".stl" style="display: none;">
+        <button id="undoButton">↩️ Deshacer</button>
+        <button id="redoButton">↪️ Rehacer</button>
+        <button onclick="enableMetro()">📏 Medir</button>
+
+    </div>
+
+    <div id="scene-container"></div>
+
+    <!-- Scripts externos -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.142/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.142/examples/js/controls/TransformControls.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128/examples/js/loaders/OBJLoader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.142/examples/js/loaders/STLLoader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.142/examples/js/exporters/STLExporter.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+    <script>
+        // =======================
+        // VARIABLES GLOBALES
+        // =======================
+        let scene, camera, renderer, controls, transformControls;
+        let selectedObject = null;
+        let copiedObjects = [];
+        let isDragging = false;
+
+        // Historial de estados para deshacer/rehacer
+        let history = [];
+        let redoStack = [];
+
+        // Copiar la(s) pieza(s) seleccionada(s)
+        document.addEventListener("keydown", function (event) {
+            // Copiar (Ctrl+C)
+            if (event.ctrlKey && event.key.toLowerCase() === "c") {
+                copiedObjects = [];
+                if (selectedObjects && selectedObjects.length > 1) {
+                    selectedObjects.forEach(obj => {
+                        copiedObjects.push({
+                            geometryParams: obj.geometry.parameters,
+                            geometryType: obj.geometry.type,
+                            materialParams: {
+                                color: obj.material.color.getHex(),
+                                map: obj.material.map ? obj.material.map.image?.src || obj.material.map.source?.src : null
+                            },
+                            scale: obj.scale.clone(),
+                            rotation: obj.rotation.clone(),
+                            position: obj.position.clone(),
+                            userData: Object.assign({}, obj.userData)
+                        });
+                    });
+                    showToast("Piezas copiadas");
+                } else if (selectedObject) {
+                    copiedObjects.push({
+                        geometryParams: selectedObject.geometry.parameters,
+                        geometryType: selectedObject.geometry.type,
+                        materialParams: {
+                            color: selectedObject.material.color.getHex(),
+                            map: selectedObject.material.map ? selectedObject.material.map.image?.src || selectedObject.material.map.source?.src : null
+                        },
+                        scale: selectedObject.scale.clone(),
+                        rotation: selectedObject.rotation.clone(),
+                        position: selectedObject.position.clone(),
+                        userData: Object.assign({}, selectedObject.userData)
+                    });
+                    showToast("Pieza copiada");
+                } else {
+                    showToast("Selecciona una o varias piezas para copiar");
+                }
+            }
+            // Pegar (Ctrl+V)
+            if (event.ctrlKey && event.key.toLowerCase() === "v") {
+                if (copiedObjects && copiedObjects.length > 0) {
+                    let newSelection = [];
+                    copiedObjects.forEach(copied => {
+                        let geometry;
+                        if (copied.geometryType === "BoxGeometry") {
+                            geometry = new THREE.BoxGeometry(
+                                copied.geometryParams.width,
+                                copied.geometryParams.height,
+                                copied.geometryParams.depth
+                            );
+                        } else if (copied.geometryType === "SphereGeometry") {
+                            geometry = new THREE.SphereGeometry(
+                                copied.geometryParams.radius,
+                                32, 32
+                            );
+                        } else if (copied.geometryType === "CylinderGeometry") {
+                            geometry = new THREE.CylinderGeometry(
+                                copied.geometryParams.radiusTop,
+                                copied.geometryParams.radiusBottom,
+                                copied.geometryParams.height,
+                                32
+                            );
+                        } else {
+                            geometry = new THREE.BoxGeometry(5, 5, 5); // Por defecto
+                        }
+                        const material = new THREE.MeshStandardMaterial({ color: copied.materialParams.color });
+                        if (copied.materialParams.map) {
+                            material.map = textureLoader.load(copied.materialParams.map);
+                        }
+                        const mesh = new THREE.Mesh(geometry, material);
+                        mesh.position.copy(copied.position).add(new THREE.Vector3(10, 0, 10));
+                        mesh.rotation.copy(copied.rotation);
+                        mesh.scale.copy(copied.scale);
+                        mesh.userData = Object.assign({}, copied.userData);
+
+                        let edges = new THREE.EdgesGeometry(geometry);
+                        let edgesMaterial = new THREE.LineBasicMaterial({ color: 0xffffff });
+                        let edgesMesh = new THREE.LineSegments(edges, edgesMaterial);
+                        mesh.add(edgesMesh);
+
+                        scene.add(mesh);
+                        newSelection.push(mesh);
+                    });
+
+                    // Selecciona todos los nuevos
+                    if (newSelection.length > 1) {
+                        selectedObjects = newSelection;
+                        // Agrupa para mover juntos
+                        if (multiSelectGroup && multiSelectGroup.children.length > 0) {
+                            const children = [...multiSelectGroup.children];
+                            children.forEach(obj => {
+                                const worldPos = obj.getWorldPosition(new THREE.Vector3());
+                                scene.add(obj);
+                                obj.position.copy(worldPos);
+                            });
+                            scene.remove(multiSelectGroup);
+                            multiSelectGroup = null;
+                        }
+                        multiSelectGroup = new THREE.Group();
+                        newSelection.forEach(obj => multiSelectGroup.add(obj));
+                        scene.add(multiSelectGroup);
+                        selectedObject = multiSelectGroup;
+                        transformControls.attach(multiSelectGroup);
+                        transformControls.setMode("translate");
+                    } else if (newSelection.length === 1) {
+                        selectedObject = newSelection[0];
+                        selectedObjects = [selectedObject];
+                        transformControls.attach(selectedObject);
+                        transformControls.setMode("translate");
+                    }
+                    saveState();
+                    showToast("Pieza(s) pegada(s)");
+                } else {
+                    showToast("No hay piezas copiadas");
+                }
+            }
+        });
+        // Función para mostrar mensajes breves
+        function showToast(msg) {
+            const toast = document.getElementById("toast");
+            toast.innerText = msg;
+            toast.style.display = "block";
+            setTimeout(() => { toast.style.display = "none"; }, 1500);
+        }
+
+        const textureLoader = new THREE.TextureLoader();
+
+        let textures = {
+            custom: null // Puedes agregar más texturas personalizadas aquí si lo necesitas
+        };
+
+        const providerTextures = {
+            duratex: [
+                {
+                    group: "Maderas", textures: [
+                        { key: "maderas/amaretto", name: "Amaretto", file: "textures/duratex/maderas/amaretto.jpg" },
+                        { key: "maderas/arena", name: "Arena", file: "textures/duratex/maderas/arena.jpg" },
+                        { key: "maderas/austral", name: "Austral", file: "textures/duratex/maderas/austral.jpg" },
+                        { key: "maderas/bahia", name: "Bahia", file: "textures/duratex/maderas/bahia.jpg" },
+                        { key: "maderas/bosco", name: "Bosco", file: "textures/duratex/maderas/bosco.jpg" },
+                        { key: "maderas/cala", name: "Cala", file: "textures/duratex/maderas/cala.jpg" },
+                        { key: "maderas/capuccino", name: "Capuccino", file: "textures/duratex/maderas/capuccino.jpg" },
+                        { key: "maderas/cedro", name: "Cedro", file: "textures/duratex/maderas/cedro.jpg" },
+                        { key: "maderas/chantilli", name: "Chantilli", file: "textures/duratex/maderas/chantilli.jpg" },
+                        { key: "maderas/glacial", name: "Glacial", file: "textures/duratex/maderas/glacial.jpg" },
+                        { key: "maderas/gracia", name: "Gracia", file: "textures/duratex/maderas/gracia.jpg" },
+                        { key: "maderas/humo", name: "Humo", file: "textures/duratex/maderas/humo.jpg" },
+                        { key: "maderas/kallio", name: "Kallio", file: "textures/duratex/maderas/kallio.jpg" },
+                        { key: "maderas/koa", name: "Koa", file: "textures/duratex/maderas/koa.jpg" },
+                        { key: "maderas/macula", name: "Macula", file: "textures/duratex/maderas/macula.jpg" },
+                        { key: "maderas/mitte", name: "Mitte", file: "textures/duratex/maderas/mitte.jpg" },
+                        { key: "maderas/nuez", name: "Nuez", file: "textures/duratex/maderas/nuez.jpg" },
+                        { key: "maderas/oasis", name: "Oasis", file: "textures/duratex/maderas/oasis.jpg" },
+                        { key: "maderas/rivera", name: "Rivera", file: "textures/duratex/maderas/rivera.jpg" },
+                        { key: "maderas/sagano", name: "Sagano", file: "textures/duratex/maderas/sagano.jpg" },
+                        { key: "maderas/soder", name: "Soder", file: "textures/duratex/maderas/soder.jpg" },
+                        { key: "maderas/tabaco chic", name: "Tabaco Chic", file: "textures/duratex/maderas/tabaco chic.jpg" },
+                        { key: "maderas/terranta", name: "Terranta", file: "textures/duratex/maderas/terranta.jpg" },
+                        { key: "maderas/traviata", name: "Traviata", file: "textures/duratex/maderas/traviata.jpg" },
+                        { key: "maderas/vienes", name: "Vienes", file: "textures/duratex/maderas/vienes.jpg" },
+                        { key: "maderas/wengue", name: "Wengue", file: "textures/duratex/maderas/wengue.jpg" },
+                        { key: "maderas/wood", name: "Wood", file: "textures/duratex/maderas/wood.jpg" }
+                    ]
+                },
+                {
+                    group: "Piedras", textures: [
+                        { key: "piedras/agatha", name: "Agatha", file: "textures/duratex/piedras/agatha.jpg" },
+                        { key: "piedras/etna", name: "Etna", file: "textures/duratex/piedras/etna.jpg" },
+                        { key: "piedras/lunar", name: "Lunar", file: "textures/duratex/piedras/lunar.jpg" },
+                        { key: "piedras/marmoro", name: "Marmoro", file: "textures/duratex/piedras/marmoro.png" }
+                    ]
+                },
+                {
+                    group: "Tejidos", textures: [
+                        { key: "tejidos/tejidoslana", name: "Tejidos Lana", file: "textures/duratex/tejidos/tejidoslana.jpg" }
+                    ]
+                },
+                {
+                    group: "Unicolores", textures: [
+                        { key: "unicolores/ambar", name: "Ámbar", file: "textures/duratex/unicolores/ambar.jpg" },
+                        { key: "unicolores/auro", name: "Auro", file: "textures/duratex/unicolores/auro.jpg" },
+                        { key: "unicolores/blanco nevado", name: "Blanco Nevado", file: "textures/duratex/unicolores/blanco nevado.jpg" },
+                        { key: "unicolores/bohem", name: "Bohem", file: "textures/duratex/unicolores/bohem.jpg" }
+                    ]
+                }
+            ],
+
+            arauco: [
+                {
+                    group: "Maderas", textures: [
+                        { key: "maderas/awoura", name: "AWOURA", file: "textures/arauco/maderas/awoura.jpg" },
+                        { key: "maderas/bora", name: "BORA", file: "textures/arauco/maderas/bora.jpg" },
+                        { key: "maderas/caramel", name: "CARAMEL", file: "textures/arauco/maderas/caramel.jpg" },
+                        { key: "maderas/cedro natural", name: "CEDRO NATURAL", file: "textures/arauco/maderas/cedro natural.jpg" },
+                        { key: "maderas/cendra escandinavo", name: "CENDRA ESCANDINAVO", file: "textures/arauco/maderas/cendra escandinavo.jpg" },
+                        { key: "maderas/cocoa", name: "COCOA", file: "textures/arauco/maderas/cocoa.jpg" },
+                        { key: "maderas/espresso", name: "ESPRESSO", file: "textures/arauco/maderas/espresso.jpg" },
+                        { key: "maderas/jerez", name: "JEREZ", file: "textures/arauco/maderas/jerez.jpg" },
+                        { key: "maderas/nodo", name: "NODO", file: "textures/arauco/maderas/nodo.jpg" },
+                        { key: "maderas/nougat", name: "NOUGAT", file: "textures/arauco/maderas/nougat.jpg" },
+                        { key: "maderas/okuzai", name: "OKUZAI", file: "textures/arauco/maderas/okuzai.jpg" },
+                        { key: "maderas/roble cava", name: "ROBLE CAVA", file: "textures/arauco/maderas/roble cava.jpg" },
+                        { key: "maderas/roble provenzal", name: "ROBLE PROVENZAL", file: "textures/arauco/maderas/roble provenzal.jpg" },
+                        { key: "maderas/roble rustico", name: "ROBLE RUSTICO", file: "textures/arauco/maderas/roble rustico.jpg" },
+                        { key: "maderas/teka artico", name: "TEKA ARTICO", file: "textures/arauco/maderas/teka artico.jpg" },
+                        { key: "maderas/toffee", name: "TOFFEE", file: "textures/arauco/maderas/toffee.jpg" },
+                        { key: "maderas/toscana", name: "TOSCANA", file: "textures/arauco/maderas/toscana.jpg" },
+                        { key: "maderas/wengue", name: "WENGUE", file: "textures/arauco/maderas/wengue.jpg" }
+                    ]
+                },
+                {
+                    group: "Piedras", textures: [
+                        { key: "piedra/antaya", name: "ANTAYA", file: "textures/arauco/piedra/antaya.jpg" }
+                    ]
+                },
+                {
+                    group: "Tejidos", textures: [
+                        { key: "tejidos/seda giorno", name: "SEDA GIORNO", file: "textures/arauco/tejidos/seda giorno.jpg" },
+                        { key: "tejidos/seda notte", name: "SEDA NOTTE", file: "textures/arauco/tejidos/seda notte.jpg" }
+                    ]
+                },
+                {
+                    group: "Unicolor", textures: [
+                        { key: "unicolor/blanco nieve", name: "BLANCO NIEVE", file: "textures/arauco/unicolor/blanco nieve.jpg" },
+                        { key: "unicolor/negro mate", name: "NEGRO MATE", file: "textures/arauco/unicolor/negro mate.jpg" },
+                        { key: "unicolor/taupe", name: "TAUPE", file: "textures/arauco/unicolor/taupe.jpg" },
+                        { key: "unicolor/titanio", name: "TITANIO", file: "textures/arauco/unicolor/titanio.jpg" }
+                    ]
+                }
+            ],
+            arkopa: [
+                {
+                    group: "Maderas", textures: [
+                        { key: "arkopa/madera/imgi_18_2786-Mat-Lidya", name: "Mat Lidya", file: "textures/arkopa/madera/imgi_18_2786-Mat-Lidya.jpg" },
+                        { key: "arkopa/madera/imgi_19_2787-Mat-Frig", name: "Mat Frig", file: "textures/arkopa/madera/imgi_19_2787-Mat-Frig.jpg" },
+                        { key: "arkopa/madera/imgi_20_1044-Mat-Pelit", name: "Mat Pelit", file: "textures/arkopa/madera/imgi_20_1044-Mat-Pelit.jpg" },
+                        { key: "arkopa/madera/imgi_21_1047-Mat-Beyaz-Pelit", name: "Mat Beyaz Pelit", file: "textures/arkopa/madera/imgi_21_1047-Mat-Beyaz-Pelit.jpg" },
+                        { key: "arkopa/madera/imgi_32_934-Mat-Boyahabilir-Ahsap", name: "Mat Boyahabilir Ahsap", file: "textures/arkopa/madera/imgi_32_934-Mat-Boyahabilir-Ahsap.jpg" },
+                        { key: "arkopa/madera/imgi_33_1737-Mat-Ozigo", name: "Mat Ozigo", file: "textures/arkopa/madera/imgi_33_1737-Mat-Ozigo.jpg" },
+                        { key: "arkopa/madera/imgi_34_1687-Mat-Acik-Mese", name: "Mat Acik Mese", file: "textures/arkopa/madera/imgi_34_1687-Mat-Acik-Mese.jpg" },
+                        { key: "arkopa/madera/imgi_35_90-Mat-Ladin", name: "Mat Ladin", file: "textures/arkopa/madera/imgi_35_90-Mat-Ladin.jpg" },
+                        { key: "arkopa/madera/imgi_36_110-Mat-Yeni-Akcaagac", name: "Mat Yeni Akcaagac", file: "textures/arkopa/madera/imgi_36_110-Mat-Yeni-Akcaagac.jpg" },
+                        { key: "arkopa/madera/imgi_37_1208-Mat-Soho", name: "Mat Soho", file: "textures/arkopa/madera/imgi_37_1208-Mat-Soho.jpg" },
+                        { key: "arkopa/madera/imgi_38_112-Mat-Yenice-Mese", name: "Mat Yenice Mese", file: "textures/arkopa/madera/imgi_38_112-Mat-Yenice-Mese.jpg" },
+                        { key: "arkopa/madera/imgi_38_1959-Hg-Ozigo", name: "Hg Ozigo", file: "textures/arkopa/madera/imgi_38_1959-Hg-Ozigo.jpg" },
+                        { key: "arkopa/madera/imgi_39_108-Mat-Turk-Mese", name: "Mat Turk Mese", file: "textures/arkopa/madera/imgi_39_108-Mat-Turk-Mese.jpg" },
+                        { key: "arkopa/madera/imgi_39_1958-HG-Modena", name: "HG Modena", file: "textures/arkopa/madera/imgi_39_1958-HG-Modena.jpg" },
+                        { key: "arkopa/madera/imgi_40_155-HG-Ladin", name: "HG Ladin", file: "textures/arkopa/madera/imgi_40_155-HG-Ladin.jpg" }
+                    ]
+                },
+                {
+                    group: "Piedras", textures: [
+                        { key: "arkopa/piedras/imgi_23_1692-Mat-Premium-Bakir", name: "Mat Premium Bakir", file: "textures/arkopa/piedras/imgi_23_1692-Mat-Premium-Bakir.jpg" },
+                        { key: "arkopa/piedras/imgi_24_1690-Mat-Premium-Nikel", name: "Mat Premium Nikel", file: "textures/arkopa/piedras/imgi_24_1690-Mat-Premium-Nikel.jpg" },
+                        { key: "arkopa/piedras/imgi_50_2355-HG-Bej-Cement", name: "HG Bej Cement", file: "textures/arkopa/piedras/imgi_50_2355-HG-Bej-Cement.jpg" },
+                        { key: "arkopa/piedras/imgi_51_2260-HG-Gri-Cement", name: "HG Gri Cement", file: "textures/arkopa/piedras/imgi_51_2260-HG-Gri-Cement.jpg" },
+                        { key: "arkopa/piedras/imgi_52_2261-HG-Vizon-Cement", name: "HG Vizon Cement", file: "textures/arkopa/piedras/imgi_52_2261-HG-Vizon-Cement.jpg" },
+                        { key: "arkopa/piedras/imgi_53_2262-HG-Antrasit-Cement", name: "HG Antrasit Cement", file: "textures/arkopa/piedras/imgi_53_2262-HG-Antrasit-Cement.jpg" },
+                        { key: "arkopa/piedras/imgi_54_2789-Mat-Pietra", name: "Mat Pietra", file: "textures/arkopa/piedras/imgi_54_2789-Mat-Pietra.jpg" },
+                        { key: "arkopa/piedras/imgi_55_2845-HG-Pietra", name: "HG Pietra", file: "textures/arkopa/piedras/imgi_55_2845-HG-Pietra.jpg" },
+                        { key: "arkopa/piedras/imgi_60_2265-HG-Siyah-Venato", name: "HG Siyah Venato", file: "textures/arkopa/piedras/imgi_60_2265-HG-Siyah-Venato.jpg" },
+                        { key: "arkopa/piedras/imgi_61_2266-Mat-Siyah-Venato-1", name: "Mat Siyah Venato 1", file: "textures/arkopa/piedras/imgi_61_2266-Mat-Siyah-Venato-1.jpg" },
+                        { key: "arkopa/piedras/imgi_64_67-Ank-Metalik", name: "Ank Metalik", file: "textures/arkopa/piedras/imgi_64_67-Ank-Metalik.jpg" }
+                    ]
+                },
+                {
+
+                    group: "Tejidos", textures: [
+                        { key: "arkopa/tejidos/imgi_10_4530", name: "imgi_10_4530", file: "textures/arkopa/tejidos/imgi_10_4530.jpg" },
+                        { key: "arkopa/tejidos/imgi_63_1992-HG-Bronz", name: "HG Bronz", file: "textures/arkopa/tejidos/imgi_63_1992-HG-Bronz.jpg" },
+                        { key: "arkopa/tejidos/imgi_65_1583-HG-Ayna", name: "HG Ayna", file: "textures/arkopa/tejidos/imgi_65_1583-HG-Ayna.jpg" },
+                        { key: "arkopa/tejidos/imgi_66_1289-HG-Beyaz-Galaxy", name: "HG Beyaz Galaxy", file: "textures/arkopa/tejidos/imgi_66_1289-HG-Beyaz-Galaxy.jpg" },
+                        { key: "arkopa/tejidos/imgi_67_618-HG-Krem-Ekru", name: "HG Krem Ekru", file: "textures/arkopa/tejidos/imgi_67_618-HG-Krem-Ekru.jpg" },
+                        { key: "arkopa/tejidos/imgi_69_846-HG-Bal-Sedef", name: "HG Bal Sedef", file: "textures/arkopa/tejidos/imgi_69_846-HG-Bal-Sedef.jpg" },
+                        { key: "arkopa/tejidos/imgi_7_4527", name: "imgi_7_4527", file: "textures/arkopa/tejidos/imgi_7_4527.jpg" },
+                        { key: "arkopa/tejidos/imgi_71_1432-HG-Kahve-Galaxy", name: "HG Kahve Galaxy", file: "textures/arkopa/tejidos/imgi_71_1432-HG-Kahve-Galaxy.jpg" },
+                        { key: "arkopa/tejidos/imgi_72_1431-HG-Antrasit-Galaxy", name: "HG Antrasit Galaxy", file: "textures/arkopa/tejidos/imgi_72_1431-HG-Antrasit-Galaxy.jpg" },
+                        { key: "arkopa/tejidos/imgi_73_1290-HG-Siyah-Galaxy", name: "HG Siyah Galaxy", file: "textures/arkopa/tejidos/imgi_73_1290-HG-Siyah-Galaxy.jpg" },
+                        { key: "arkopa/tejidos/imgi_74_1294-HG-Kahve-Terra", name: "HG Kahve Terra", file: "textures/arkopa/tejidos/imgi_74_1294-HG-Kahve-Terra.jpg" },
+                        { key: "arkopa/tejidos/imgi_75_73-Mat-Beyaz", name: "Mat Beyaz", file: "textures/arkopa/tejidos/imgi_75_73-Mat-Beyaz.jpg" },
+                        { key: "arkopa/tejidos/imgi_77_88-Mat-Krem", name: "Mat Krem", file: "textures/arkopa/tejidos/imgi_77_88-Mat-Krem.jpg" },
+                        { key: "arkopa/tejidos/imgi_79_1164-HG-Acik-Keten", name: "HG Acik Keten", file: "textures/arkopa/tejidos/imgi_79_1164-HG-Acik-Keten.jpg" },
+                        { key: "arkopa/tejidos/imgi_8_4528", name: "imgi_8_4528", file: "textures/arkopa/tejidos/imgi_8_4528.jpg" },
+                        { key: "arkopa/tejidos/imgi_9_4529", name: "imgi_9_4529", file: "textures/arkopa/tejidos/imgi_9_4529.jpg" }
+                    ]
+                },
+                {
+                    group: "Unicolores", textures: [
+                        { key: "arkopa/unicolores/imgi_17_Arkopa-Akrilik-Renkler-Hg-Beyaz-", name: "HG Beyaz", file: "textures/arkopa/unicolores/imgi_17_Arkopa-Akrilik-Renkler-Hg-Beyaz-.jpg" },
+                        { key: "arkopa/unicolores/imgi_18_312-SM-Beyaz", name: "SM Beyaz", file: "textures/arkopa/unicolores/imgi_18_312-SM-Beyaz.jpg" },
+                        { key: "arkopa/unicolores/imgi_18_3500-RM-Albus", name: "RM Albus", file: "textures/arkopa/unicolores/imgi_18_3500-RM-Albus.jpg" },
+                        { key: "arkopa/unicolores/imgi_18_539-HG-Proje-Beyaz", name: "HG Proje Beyaz", file: "textures/arkopa/unicolores/imgi_18_539-HG-Proje-Beyaz.jpg" },
+                        { key: "arkopa/unicolores/imgi_18_Arkopa-Akrilik-Renkler-Hg-Krem-Akrilik-Sns-2323-", name: "HG Krem Akrilik", file: "textures/arkopa/unicolores/imgi_18_Arkopa-Akrilik-Renkler-Hg-Krem-Akrilik-Sns-2323-.jpg" },
+                        { key: "arkopa/unicolores/imgi_19_1150-HG-Porselen-Beyaz", name: "HG Porselen Beyaz", file: "textures/arkopa/unicolores/imgi_19_1150-HG-Porselen-Beyaz.jpg" },
+                        { key: "arkopa/unicolores/imgi_19_746-SM-Krem", name: "SM Krem", file: "textures/arkopa/unicolores/imgi_19_746-SM-Krem.jpg" },
+                        { key: "arkopa/unicolores/imgi_19_Arkopa-Akrilik-Renkler-Hg-Kasmir-Sns-2325-", name: "HG Kasmir", file: "textures/arkopa/unicolores/imgi_19_Arkopa-Akrilik-Renkler-Hg-Kasmir-Sns-2325-.jpg" },
+                        { key: "arkopa/unicolores/imgi_20_2277-SM-Acik-Gri", name: "SM Acik Gri", file: "textures/arkopa/unicolores/imgi_20_2277-SM-Acik-Gri.jpg" },
+                        { key: "arkopa/unicolores/imgi_20_3502-RM-Terra", name: "RM Terra", file: "textures/arkopa/unicolores/imgi_20_3502-RM-Terra.jpg" },
+                        { key: "arkopa/unicolores/imgi_20_845-HG-Bianco", name: "HG Bianco", file: "textures/arkopa/unicolores/imgi_20_845-HG-Bianco.jpg" },
+                        { key: "arkopa/unicolores/imgi_21_154-HG-Krem", file: "textures/arkopa/unicolores/imgi_21_154-HG-Krem.jpg" },
+                        { key: "arkopa/unicolores/imgi_21_3503-RM-Aura", name: "RM Aura", file: "textures/arkopa/unicolores/imgi_21_3503-RM-Aura.jpg" },
+                        { key: "arkopa/unicolores/imgi_21_747-SM-Yeni-Gri", name: "SM Yeni Gri", file: "textures/arkopa/unicolores/imgi_21_747-SM-Yeni-Gri.jpg" }
+                    ]
+                }
+            ],
+            primadera: [
+                {
+                    group: "Maderas", textures: [
+                        { key: "madera/andino", name: "Andino", file: "textures/primadera/madera/andino.jpg" },
+                        { key: "madera/bacata", name: "Bacata", file: "textures/primadera/madera/bacata.jpg" },
+                        { key: "madera/baudo", name: "Baudo", file: "textures/primadera/madera/baudo.jpg" },
+                        { key: "madera/boscus escandinavo", name: "Boscus Escandinavo", file: "textures/primadera/madera/boscus escandinavo.jpg" },
+                        { key: "madera/brooklyn oak", name: "Brooklyn Oak", file: "textures/primadera/madera/brooklyn oak.jpg" },
+                        { key: "madera/cedro", name: "Cedro", file: "textures/primadera/madera/cedro.jpg" },
+                        { key: "madera/chircal", name: "Chircal", file: "textures/primadera/madera/chircal.jpg" },
+                        { key: "madera/cocuy", name: "Cocuy", file: "textures/primadera/madera/cocuy.jpg" },
+                        { key: "madera/flormorado", name: "Flormorado", file: "textures/primadera/madera/flormorado.jpg" },
+                        { key: "madera/glaze", name: "Glaze", file: "textures/primadera/madera/glaze.jpg" },
+                        { key: "madera/iguaque", name: "Iguaque", file: "textures/primadera/madera/iguaque.jpg" },
+                        { key: "madera/ika", name: "Ika", file: "textures/primadera/madera/ika.jpg" },
+                        { key: "madera/kanua", name: "Kanua", file: "textures/primadera/madera/kanua.jpg" },
+                        { key: "madera/majuy", name: "Majuy", file: "textures/primadera/madera/majuy.jpg" },
+                        { key: "madera/maku", name: "Maku", file: "textures/primadera/madera/maku.jpg" },
+                        { key: "madera/mall", name: "Mall", file: "textures/primadera/madera/mall.jpg" },
+                        { key: "madera/mitu", name: "Mitu", file: "textures/primadera/madera/mitu.jpg" },
+                        { key: "madera/pacifico", name: "Pacifico", file: "textures/primadera/madera/pacifico.jpg" },
+                        { key: "madera/roble cenizo", name: "Roble Cenizo", file: "textures/primadera/madera/roble cenizo.jpg" },
+                        { key: "madera/rovere arena", name: "Rovere Arena", file: "textures/primadera/madera/rovere arena.jpg" },
+                        { key: "madera/rustic sand", name: "Rustic Sand", file: "textures/primadera/madera/rustic sand.jpg" },
+                        { key: "madera/sapan", name: "Sapan", file: "textures/primadera/madera/sapan.jpg" },
+                        { key: "madera/sikuani", name: "Sikuani", file: "textures/primadera/madera/sikuani.jpg" },
+                        { key: "madera/tambo", name: "Tambo", file: "textures/primadera/madera/tambo.jpg" },
+                        { key: "madera/taroa", name: "Taroa", file: "textures/primadera/madera/taroa.jpg" },
+                        { key: "madera/tauri", name: "Tauri", file: "textures/primadera/madera/tauri.jpg" },
+                        { key: "madera/tumaco", name: "Tumaco", file: "textures/primadera/madera/tumaco.jpg" },
+                        { key: "madera/volcanico", name: "Volcanico", file: "textures/primadera/madera/volcanico.jpg" },
+                        { key: "madera/wengue", name: "Wengue", file: "textures/primadera/madera/wengue.jpg" }
+                    ]
+                },
+                {
+                    group: "Piedras", textures: [
+                        { key: "piedra/checua", name: "Checua", file: "textures/primadera/piedra/checua.jpg" },
+                        { key: "piedra/suesca", name: "Suesca", file: "textures/primadera/piedra/suesca.jpg" },
+                        { key: "piedra/tausa", name: "Tausa", file: "textures/primadera/piedra/tausa.jpg" },
+                        { key: "piedra/tihua", name: "Tihua", file: "textures/primadera/piedra/tihua.jpg" }
+                    ]
+                },
+                {
+                    group: "Tejidos", textures: [
+                        { key: "tejido/london", name: "London", file: "textures/primadera/tejido/london.jpg" },
+                        { key: "tejido/tenza", name: "Tenza", file: "textures/primadera/tejido/tenza.jpg" }
+                    ]
+                },
+                {
+                    group: "Unicolores", textures: [
+                        { key: "unicolores/artico", name: "Ártico", file: "textures/primadera/unicolores/artico.jpg" },
+                        { key: "unicolores/bareque", name: "Bareque", file: "textures/primadera/unicolores/bareque.jpg" },
+                        { key: "unicolores/creta", name: "Creta", file: "textures/primadera/unicolores/creta.jpg" },
+                        { key: "unicolores/humo", name: "Humo", file: "textures/primadera/unicolores/humo.jpg" },
+                        { key: "unicolores/jayka", name: "Jayka", file: "textures/primadera/unicolores/jayka.jpg" },
+                        { key: "unicolores/sukta", name: "Sukta", file: "textures/primadera/unicolores/sukta.jpg" },
+                        { key: "unicolores/yalaa", name: "Yalaa", file: "textures/primadera/unicolores/yalaa.jpg" }
+                    ]
+                },
+            ]
+        };
+
+
+        // =======================
+        // INICIALIZACIÓN
+        // =======================
+        function init() {
+            const container = document.getElementById("scene-container");
+            scene = new THREE.Scene();
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            container.appendChild(renderer.domElement);
+
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 90000);
+            camera.position.set(200, 200, 300);
+            controls = new THREE.OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true;
+            controls.dampingFactor = 0.15;
+            controls.rotateSpeed = 0.7;
+            controls.zoomSpeed = 0.8;
+            controls.panSpeed = 0.7;
+            controls.enableZoom = true;
+            controls.mouseButtons = {
+                LEFT: THREE.MOUSE.ROTATE,
+                MIDDLE: THREE.MOUSE.PAN,   // <-- Esto hace que la ruedita haga pan
+                RIGHT: THREE.MOUSE.PAN
+            };
+
+            transformControls = new THREE.TransformControls(camera, renderer.domElement);
+            transformControls.addEventListener("dragging-changed", (event) => {
+                isDragging = event.value; // <--- Añade esto
+                controls.enabled = !event.value;
+                if (!event.value && selectedObject) {
+                    // --- DESAGRUPAR SI ES UN GRUPO ---
+                    if (selectedObject.type === "Group" && selectedObject.children.length > 0) {
+                        // Devuelve cada objeto a la escena y ajusta su posición global
+                        const children = [...selectedObject.children];
+                        children.forEach(obj => {
+                            // Calcula la posición global antes de quitar del grupo
+                            const worldPos = obj.getWorldPosition(new THREE.Vector3());
+                            scene.add(obj);
+                            obj.position.copy(worldPos);
+                        });
+                        // Elimina el grupo temporal
+                        scene.remove(selectedObject);
+                        selectedObject = null;
+                        transformControls.detach();
+                        selectedObjects = [];
+                        multiSelectGroup = null;
+                    }
+                    saveState();
+                }
+            });
+            scene.add(transformControls);
+
+            // Restaurar estado si existe
+            const savedState = localStorage.getItem("modula_project_state");
+            if (savedState) {
+                restoreState(savedState);
+                history = [savedState];
+                redoStack = [];
+            } else {
+                saveState();
+            }
+
+            scene.add(new THREE.AmbientLight(0xffffff, 0.6));
+            let dirLight = new THREE.DirectionalLight(0xffffff, 1);
+            dirLight.position.set(5, 10, 5);
+            scene.add(dirLight);
+
+            const gridHelper = new THREE.GridHelper(1000, 100, 0x888888, 0x444444);
+            gridHelper.position.y = 0.01;
+            scene.add(gridHelper);
+            scene.add(new THREE.AxesHelper(200));
+
+            // Selección unificada para mouse y touch
+            renderer.domElement.addEventListener("pointerdown", onPointerDown, false);
+            renderer.domElement.addEventListener("dblclick", onDeselect);
+
+            window.addEventListener("resize", onWindowResize);
+
+            animate();
+        }
+        // =======================
+        // ANIMACIÓN
+        // =======================
+        function animate() {
+            requestAnimationFrame(animate);
+            controls.update();
+            renderer.render(scene, camera);
+        }
+        // =======================
+        // SELECCIÓN Y EVENTOS
+        // =======================
+        function onPointerDown(event) {
+            if (isDragSelecting) return;
+            if (isDragging) return;
+            if (metroActive) return; // <-- No seleccionar si el metro está activo
+            // Solo selecciona si no es sobre el menú
+            const menu = document.getElementById("menu");
+            if (menu.contains(event.target)) return;
+            event.preventDefault();
+
+            const rect = renderer.domElement.getBoundingClientRect();
+            let clientX, clientY;
+            if (event.touches && event.touches.length === 1) {
+                clientX = event.touches[0].clientX;
+                clientY = event.touches[0].clientY;
+            } else {
+                clientX = event.clientX;
+                clientY = event.clientY;
+            }
+            const mouse = new THREE.Vector2(
+                ((clientX - rect.left) / rect.width) * 2 - 1,
+                -((clientY - rect.top) / rect.height) * 2 + 1
+            );
+            const raycaster = new THREE.Raycaster();
+            const selectableObjects = scene.children.filter(obj => obj.isMesh && obj.type === "Mesh");
+            raycaster.setFromCamera(mouse, camera);
+            const intersects = raycaster.intersectObjects(selectableObjects);
+            if (intersects.length > 0) {
+                selectedObject = intersects[0].object;
+                transformControls.attach(selectedObject);
+                transformControls.setMode("translate");
+                updateRotationDisplay();
+                if (selectedObject.geometry) {
+                    selectedObject.geometry.computeBoundingBox();
+                    const bbox = selectedObject.geometry.boundingBox;
+                    document.getElementById("scaleWidth").value = ((bbox.max.x - bbox.min.x) * selectedObject.scale.x).toFixed(2);
+                    document.getElementById("scaleHeight").value = ((bbox.max.y - bbox.min.y) * selectedObject.scale.y).toFixed(2);
+                    document.getElementById("scaleDepth").value = ((bbox.max.z - bbox.min.z) * selectedObject.scale.z).toFixed(2);
+                }
+
+                // Centra la cámara en el objeto seleccionado
+                const box = new THREE.Box3().setFromObject(selectedObject);
+                const center = box.getCenter(new THREE.Vector3());
+                controls.target.copy(center);
+                camera.lookAt(center);
+                controls.update();
+            }
+        }
+
+        window.addEventListener("keydown", function (event) {
+            if (event.key === "Escape") {
+                // Limpia selección múltiple visual
+                const meshes = scene.children.filter(obj => obj.isMesh && obj.type === "Mesh");
+                meshes.forEach(obj => {
+                    if (obj.children.length > 0 && obj.children[0].material) {
+                        obj.children[0].material.color.set(0xffffff);
+                    }
+                    if (obj.material) obj.material.color.set(0x808080);
+                });
+                // Elimina grupo temporal si existe
+                if (multiSelectGroup && multiSelectGroup.children.length > 0) {
+                    const children = [...multiSelectGroup.children];
+                    children.forEach(obj => {
+                        const worldPos = obj.getWorldPosition(new THREE.Vector3());
+                        scene.add(obj);
+                        obj.position.copy(worldPos);
+                    });
+                    scene.remove(multiSelectGroup);
+                    multiSelectGroup = null;
+                }
+                selectedObject = null;
+                selectedObjects = [];
+                transformControls.detach();
+                updateRotationDisplay();
+            }
+        });
+
+        function onDeselect(event) {
+            const menu = document.getElementById("menu");
+            if (menu.contains(event.target)) return;
+            event.preventDefault();
+            // Limpia selección múltiple visual
+            const meshes = scene.children.filter(obj => obj.isMesh && obj.type === "Mesh");
+            meshes.forEach(obj => {
+                if (obj.children.length > 0 && obj.children[0].material) {
+                    obj.children[0].material.color.set(0xffffff);
+                }
+                if (obj.material) obj.material.color.set(0x808080);
+            });
+            selectedObject = null;
+            selectedObjects = [];
+            transformControls.detach();
+            updateRotationDisplay();
+        }
+
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+
+        // =======================
+        // ACCIONES DE ESCENA
+        // =======================
+        function parseDimensionInput(val) {
+            let num = parseFloat(val);
+            return isNaN(num) ? 0 : num;
+        }
+        function addCustomCube() {
+            let name = document.getElementById("pieceName").value.trim();
+            let width = parseDimensionInput(document.getElementById("width").value);
+            let height = parseDimensionInput(document.getElementById("height").value);
+            let depth = parseDimensionInput(document.getElementById("depth").value);
+            if (!name) return alert("Por favor, ingresa un nombre para la pieza.");
+            if (width <= 0 || height <= 0 || depth <= 0) return alert("Las dimensiones deben ser mayores a 0.");
+            let geometry = new THREE.BoxGeometry(width, height, depth);
+            const material = new THREE.MeshStandardMaterial({ color: 0x808080 });
+            const mesh = new THREE.Mesh(geometry, material);
+            mesh.position.set(0, height / 2, 0);
+            mesh.userData.name = name;
+            scene.add(mesh);
+            let edges = new THREE.EdgesGeometry(geometry);
+            let edgesMaterial = new THREE.LineBasicMaterial({ color: 0xffffff });
+            let edgesMesh = new THREE.LineSegments(edges, edgesMaterial);
+            mesh.add(edgesMesh);
+            document.getElementById("pieceName").value = "";
+            saveState();
+        }
+
+        function deleteSelected() {
+            if (selectedObject) {
+                scene.remove(selectedObject);
+                transformControls.detach();
+                selectedObject = null;
+                saveState();
+            }
+        }
+        // =======================
+        // TEXTURAS
+        // =======================
+
+        function applyTextureToSelected(texFile) {
+            if (!selectedObject) {
+                showToast("Selecciona una pieza para aplicar la textura");
+                return;
+            }
+            const texture = textureLoader.load(texFile, function () {
+                selectedObject.material.map = texture;
+                selectedObject.material.needsUpdate = true;
+                saveState();
+                showToast("Textura aplicada");
+            });
+        }
+
+        function showProviderTextures(provider) {
+            const textureGallery = document.getElementById("textureGallery");
+            textureGallery.innerHTML = ""; // Limpia la galería
+            if (!providerTextures[provider]) return;
+
+            providerTextures[provider].forEach(group => {
+                // Crea un título para la categoría
+                const groupTitle = document.createElement("div");
+                groupTitle.textContent = group.group;
+                groupTitle.style.width = "100%";
+                groupTitle.style.fontWeight = "bold";
+                groupTitle.style.margin = "8px 0 4px 0";
+                groupTitle.style.fontSize = "13px";
+                groupTitle.style.color = "#fff";
+                textureGallery.appendChild(groupTitle);
+
+                // Crea los botones de textura para este grupo
+                group.textures.forEach(tex => {
+                    const btn = document.createElement("button");
+                    btn.title = tex.name;
+                    btn.style.backgroundImage = `url('${tex.file}')`;
+                    btn.style.backgroundSize = "cover";
+                    btn.style.width = "44px";
+                    btn.style.height = "44px";
+                    btn.style.marginRight = "4px";
+                    btn.onclick = function () {
+                        applyTextureToSelected(tex.file);
+                    };
+                    textureGallery.appendChild(btn);
+                });
+            });
+
+            // Si hay un objeto seleccionado y ya tenía textura, intenta aplicar la del proveedor actual
+            if (selectedObject && selectedObject.material.map && selectedObject.material.map.image) {
+                const currentSrc = selectedObject.material.map.image.src.split('/').pop().toLowerCase();
+                let found = null;
+                providerTextures[provider].forEach(group => {
+                    group.textures.forEach(tex => {
+                        if (tex.file.toLowerCase().includes(currentSrc)) {
+                            found = tex.file;
+                        }
+                    });
+                });
+                if (found) {
+                    applyTextureToSelected(found);
+                }
+            }
+        }
+
+        // Lógica para texturas personalizadas
+        let customTextures = [];
+        
+        const savedCustomTextures = localStorage.getItem("modula_custom_textures");
+        if (savedCustomTextures) {
+            customTextures = JSON.parse(savedCustomTextures);
+            showCustomTextures();
+        }
+
+        // Mostrar texturas personalizadas
+        function showCustomTextures() {
+            const gallery = document.getElementById("customTextureGallery");
+            gallery.innerHTML = "";
+            customTextures.forEach((tex, idx) => {
+                const btn = document.createElement("button");
+                btn.title = tex.name;
+                btn.style.backgroundImage = `url('${tex.url}')`;
+                btn.style.backgroundSize = "cover";
+                btn.style.width = "44px";
+                btn.style.height = "44px";
+                btn.onclick = function () {
+                    applyTextureToSelected(tex.url);
+                };
+                gallery.appendChild(btn);
+            });
+        }
+
+        // Manejar subida de textura personalizada
+        document.getElementById("customTextureInput").addEventListener("change", function (e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function (evt) {
+                const url = evt.target.result;
+                const name = prompt("Nombre de la textura:", file.name.replace(/\.[^/.]+$/, ""));
+                if (name) {
+                    customTextures.push({ name, url });
+                    showCustomTextures();
+                    showToast("Textura agregada");
+                    // Guarda en localStorage
+                    localStorage.setItem("modula_custom_textures", JSON.stringify(customTextures));
+                }
+            };
+            reader.readAsDataURL(file);
+        });
+
+        // Opción para mostrar texturas personalizadas en el selector de proveedor
+        const providerSelect = document.getElementById("providerSelect");
+        if (!providerSelect.querySelector("option[value='custom']")) {
+            const opt = document.createElement("option");
+            opt.value = "custom";
+            opt.textContent = "Personalizado";
+            providerSelect.appendChild(opt);
+        }
+
+        // Modifica showProviderTextures para mostrar las personalizadas
+        function showProviderTextures(provider) {
+            if (provider === "custom") {
+                showCustomTextures();
+                return;
+            }
+            const textureGallery = document.getElementById("textureGallery");
+            textureGallery.innerHTML = ""; // Limpia la galería
+            if (!providerTextures[provider]) return;
+
+            providerTextures[provider].forEach(group => {
+                // Crea un título para la categoría
+                const groupTitle = document.createElement("div");
+                groupTitle.textContent = group.group;
+                groupTitle.style.width = "100%";
+                groupTitle.style.fontWeight = "bold";
+                groupTitle.style.margin = "8px 0 4px 0";
+                groupTitle.style.fontSize = "13px";
+                groupTitle.style.color = "#fff";
+                textureGallery.appendChild(groupTitle);
+
+                // Crea los botones de textura para este grupo
+                group.textures.forEach(tex => {
+                    const btn = document.createElement("button");
+                    btn.title = tex.name;
+                    btn.style.backgroundImage = `url('${tex.file}')`;
+                    btn.style.backgroundSize = "cover";
+                    btn.style.width = "44px";
+                    btn.style.height = "44px";
+                    btn.style.marginRight = "4px";
+                    btn.onclick = function () {
+                        applyTextureToSelected(tex.file);
+                    };
+                    textureGallery.appendChild(btn);
+                });
+            });
+
+            // Si hay un objeto seleccionado y ya tenía textura, intenta aplicar la del proveedor actual
+            if (selectedObject && selectedObject.material.map && selectedObject.material.map.image) {
+                const currentSrc = selectedObject.material.map.image.src.split('/').pop().toLowerCase();
+                let found = null;
+                providerTextures[provider].forEach(group => {
+                    group.textures.forEach(tex => {
+                        if (tex.file.toLowerCase().includes(currentSrc)) {
+                            found = tex.file;
+                        }
+                    });
+                });
+                if (found) {
+                    applyTextureToSelected(found);
+                }
+            }
+        }
+
+        // Escucha el cambio de proveedor y muestra las texturas
+        document.getElementById("providerSelect").addEventListener("change", function () {
+            const provider = this.value;
+            showProviderTextures(provider);
+        });
+
+        function updateTextureOptions() {
+            // Llama a la función real que actualiza la galería de texturas
+            const provider = document.getElementById("providerSelect").value;
+            showProviderTextures(provider);
+        }
+        // =======================
+        // ROTACIÓN Y ESCALA
+        // =======================
+        function rotateObject(axis, angle) {
+            if (!selectedObject) return alert("Selecciona un objeto antes de rotarlo.");
+            let radians = THREE.MathUtils.degToRad(angle);
+            if (axis === 'x') selectedObject.rotation.x += radians;
+            if (axis === 'y') selectedObject.rotation.y += radians;
+            if (axis === 'z') selectedObject.rotation.z += radians;
+            updateRotationDisplay();
+            saveState();
+        }
+
+        function updateRotationDisplay() {
+            if (!selectedObject) {
+                document.getElementById("rotationX").innerText = `X: 0°`;
+                document.getElementById("rotationY").innerText = `Y: 0°`;
+                document.getElementById("rotationZ").innerText = `Z: 0°`;
+                return;
+            }
+            let rx = Math.round(THREE.MathUtils.radToDeg(selectedObject.rotation.x)) % 360;
+            let ry = Math.round(THREE.MathUtils.radToDeg(selectedObject.rotation.y)) % 360;
+            let rz = Math.round(THREE.MathUtils.radToDeg(selectedObject.rotation.z)) % 360;
+            document.getElementById("rotationX").innerText = `X: ${rx}°`;
+            document.getElementById("rotationY").innerText = `Y: ${ry}°`;
+            document.getElementById("rotationZ").innerText = `Z: ${rz}°`;
+        }
+
+        function updateScale() {
+            if (!selectedObject) return;
+            let scaleFactor = parseFloat(document.getElementById("scaleRange").value);
+            selectedObject.scale.set(scaleFactor, scaleFactor, scaleFactor);
+            document.getElementById("scaleValue").innerText = scaleFactor + "x";
+            saveState();
+        }
+
+        function updateCustomScale() {
+            if (!selectedObject) return;
+            let width = parseFloat(document.getElementById("scaleWidth").value);
+            let height = parseFloat(document.getElementById("scaleHeight").value);
+            let depth = parseFloat(document.getElementById("scaleDepth").value);
+            if (!selectedObject.geometry) return;
+            selectedObject.geometry.computeBoundingBox();
+            let bbox = selectedObject.geometry.boundingBox;
+            let scaleX = width / (bbox.max.x - bbox.min.x);
+            let scaleY = height / (bbox.max.y - bbox.min.y);
+            let scaleZ = depth / (bbox.max.z - bbox.min.z);
+            selectedObject.scale.set(scaleX, scaleY, scaleZ);
+            saveState();
+        }
+
+        function resetScale() {
+            if (!selectedObject) return;
+            selectedObject.scale.set(1, 1, 1);
+            document.getElementById("scaleRange").value = 1;
+            document.getElementById("scaleValue").innerText = "1x";
+            saveState();
+        }
+
+        // =======================
+        // ESTADO / HISTORIAL
+        // =======================
+        function saveState() {
+            let state = scene.children
+                .filter(obj => obj.isMesh)
+                .map(obj => {
+                    if (obj.userData.isImportedModel && obj.userData.modelPath) {
+                        return {
+                            isImportedModel: true,
+                            modelPath: obj.userData.modelPath,
+                            position: obj.position.clone(),
+                            rotation: obj.rotation.clone(),
+                            scale: obj.scale.clone()
+                        };
+                    } else {
+                        return {
+                            geometryType: obj.geometry.type,
+                            geometryParams: obj.geometry.parameters,
+                            position: obj.position.clone(),
+                            rotation: obj.rotation.clone(),
+                            scale: obj.scale.clone(),
+                            material: {
+                                color: obj.material.color.getHex(),
+                                textureType: Object.entries(textures).find(([key, tex]) => tex === obj.material.map)?.[0] || "none",
+                                mapSrc: obj.material.map?.image?.src || obj.material.map?.source?.src || null // <-- Añade esto
+                            },
+                            name: obj.userData.name || "Sin nombre"
+                        };
+                    }
+                });
+            try {
+                localStorage.setItem("modula_project_state", JSON.stringify(state));
+            } catch (e) {
+                console.warn("No se pudo guardar el estado en localStorage:", e);
+            }
+            history.push(JSON.stringify(state));
+            redoStack = [];
+        }
+
+        function restoreState(stateString) {
+            const state = JSON.parse(stateString);
+            scene.children = scene.children.filter(obj => !(obj.isMesh));
+            state.forEach(data => {
+                if (data.isImportedModel && data.modelPath) {
+                    let loader;
+                    if (data.modelPath.endsWith(".obj")) {
+                        loader = new THREE.OBJLoader();
+                        loader.load(data.modelPath, function (object) {
+                            object.position.copy(data.position);
+                            object.rotation.copy(data.rotation);
+                            object.scale.copy(data.scale || new THREE.Vector3(1, 1, 1));
+                            object.userData.isImportedModel = true;
+                            object.userData.modelPath = data.modelPath;
+                            scene.add(object);
+                        });
+                    } else if (data.modelPath.endsWith(".stl")) {
+                        loader = new THREE.STLLoader();
+                        loader.load(data.modelPath, function (geometry) {
+                            const material = new THREE.MeshStandardMaterial({ color: 0xcccccc });
+                            const mesh = new THREE.Mesh(geometry, material);
+                            mesh.position.copy(data.position);
+                            mesh.rotation.copy(data.rotation);
+                            mesh.scale.copy(data.scale || new THREE.Vector3(1, 1, 1));
+                            mesh.userData.isImportedModel = true;
+                            mesh.userData.modelPath = data.modelPath;
+                            scene.add(mesh);
+                        });
+                    }
+                } else {
+                    let geometry;
+                    if (data.geometryType === "BoxGeometry") {
+                        geometry = new THREE.BoxGeometry(
+                            data.geometryParams.width,
+                            data.geometryParams.height,
+                            data.geometryParams.depth
+                        );
+                    } else if (data.geometryType === "SphereGeometry") {
+                        geometry = new THREE.SphereGeometry(
+                            data.geometryParams.radius,
+                            32, 32
+                        );
+                    } else if (data.geometryType === "CylinderGeometry") {
+                        geometry = new THREE.CylinderGeometry(
+                            data.geometryParams.radiusTop,
+                            data.geometryParams.radiusBottom,
+                            data.geometryParams.height,
+                            32
+                        );
+                    } else {
+                        geometry = new THREE.BoxGeometry(1, 1, 1);
+                    }
+                    let material = new THREE.MeshStandardMaterial({ color: data.material.color });
+                    if (data.material.mapSrc) {
+                        material.map = textureLoader.load(data.material.mapSrc);
+                        material.needsUpdate = true;
+                    } else if (data.material.textureType && data.material.textureType !== "none") {
+                        material.map = textures[data.material.textureType];
+                        material.needsUpdate = true;
+                    }
+                    let mesh = new THREE.Mesh(geometry, material);
+                    mesh.position.copy(data.position);
+                    mesh.rotation.copy(data.rotation);
+                    mesh.scale.copy(data.scale || new THREE.Vector3(1, 1, 1));
+                    mesh.userData.name = data.name;
+                    let edges = new THREE.EdgesGeometry(geometry);
+                    let edgesMaterial = new THREE.LineBasicMaterial({ color: 0xffffff });
+                    let edgesMesh = new THREE.LineSegments(edges, edgesMaterial);
+                    mesh.add(edgesMesh);
+                    scene.add(mesh);
+                }
+            });
+        }
+
+        // =======================
+        // IMPORTAR / EXPORTAR MODELOS
+        // =======================
+        function loadSelectedModel() {
+            const select = document.getElementById("modelSelect");
+            const value = select.value;
+            scene.children
+                .filter(obj => obj.userData.isImportedModel)
+                .forEach(obj => scene.remove(obj));
+            let loader;
+            let modelPath = value;
+            if (value.endsWith(".obj")) {
+                loader = new THREE.OBJLoader();
+                loader.load(modelPath, function (object) {
+                    object.traverse(function (child) {
+                        if (child.isMesh) {
+                            child.material = new THREE.MeshStandardMaterial({ color: 0xcccccc });
+                        }
+                    });
+                    object.position.set(0, 0, 0);
+                    object.userData.isImportedModel = true;
+                    object.userData.modelPath = modelPath;
+                    scene.add(object);
+                    saveState();
+                }, undefined, function (error) {
+                    alert("Error al cargar el modelo OBJ: " + error);
+                });
+            } else if (value.endsWith(".stl")) {
+                loader = new THREE.STLLoader();
+                loader.load(modelPath, function (geometry) {
+                    const material = new THREE.MeshStandardMaterial({ color: 0xcccccc });
+                    const mesh = new THREE.Mesh(geometry, material);
+                    mesh.position.set(0, 0, 0);
+                    mesh.userData.isImportedModel = true;
+                    mesh.userData.modelPath = modelPath;
+                    scene.add(mesh);
+                    saveState();
+                }, undefined, function (error) {
+                    alert("Error al cargar el modelo STL: " + error);
+                });
+            } else {
+                alert("Formato de modelo no soportado.");
+            }
+        }
+
+        // =======================
+        // DESHACER / REHACER
+        // =======================
+        function undoAction() {
+            if (history.length < 2) return alert("No hay más acciones para deshacer.");
+            redoStack.push(history.pop());
+            restoreState(history[history.length - 1]);
+        }
+        function redoAction() {
+            if (redoStack.length === 0) return alert("No hay acciones para rehacer.");
+            const nextState = redoStack.pop();
+            history.push(nextState);
+            restoreState(nextState);
+        }
+        document.getElementById("undoButton").addEventListener("click", undoAction);
+        document.getElementById("redoButton").addEventListener("click", redoAction);
+
+        // =======================
+        // OTRAS UTILIDADES
+        // =======================
+        function enableRotation() {
+            if (!selectedObject) return alert("Selecciona un objeto para rotar.");
+            transformControls.attach(selectedObject);
+            transformControls.setMode("rotate");
+        }
+
+        function setView(view) {
+            if (!camera) return;
+            let target = new THREE.Vector3(0, 0, 0);
+            if (view === 'top') {
+                camera.position.set(0, 500, 0);
+                camera.up.set(0, 0, -1); // Para que el eje Z quede hacia arriba en pantalla
+                target.set(0, 0, 0);
+            } else if (view === 'front') {
+                camera.position.set(0, 0, 500);
+                camera.up.set(0, 1, 0);
+                target.set(0, 0, 0);
+            } else if (view === 'right') {
+                camera.position.set(500, 0, 0);
+                camera.up.set(0, 1, 0);
+                target.set(0, 0, 0);
+            } else if (view === 'left') {
+                camera.position.set(-500, 0, 0);
+                camera.up.set(0, 1, 0);
+                target.set(0, 0, 0);
+            } else {
+                camera.position.set(200, 200, 300);
+                camera.up.set(0, 1, 0);
+                target.set(0, 0, 0);
+            }
+            camera.lookAt(target);
+            controls.target.copy(target);
+            controls.update();
+            saveState();
+        }
+
+        // =======================
+        // EXPORTAR IMAGEN
+        // =======================
+        let exportCamera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        exportCamera.position.set(0, 300, 500);
+        exportCamera.lookAt(0, 0, 0);
+
+        let menuBackCamera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        menuBackCamera.position.set(-500, 0, 0);
+        menuBackCamera.lookAt(0, 0, 0);
+
+        function renderScene() {
+            if (!scene || !(scene instanceof THREE.Scene)) return;
+            if (!renderer || !(renderer instanceof THREE.WebGLRenderer)) return;
+
+            let objectsHidden = [];
+            scene.traverse((object) => {
+                if (object.type === "GridHelper" || object.type === "AxesHelper") {
+                    objectsHidden.push(object);
+                    object.visible = false;
+                }
+            });
+
+            // Usa la cámara actual
+            renderer.render(scene, camera);
+
+            const imageURL = renderer.domElement.toDataURL("image/png");
+            objectsHidden.forEach((object) => object.visible = true);
+
+            const link = document.createElement("a");
+            link.href = imageURL;
+            link.download = "render_3D.png";
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+        document.getElementById("renderSceneButton").addEventListener("click", function () {
+            renderScene();
+        });
+
+        // =======================
+        // EXPORTAR PROYECTO
+        // =======================
+        function exportToSTL() {
+            if (typeof THREE === "undefined" || !THREE.STLExporter) return;
+            if (!scene || !(scene instanceof THREE.Scene)) return;
+
+            const exporter = new THREE.STLExporter();
+            let meshesGroup = new THREE.Group();
+
+            scene.traverse((object) => {
+                if (
+                    object.isMesh &&
+                    object.type === "Mesh" &&
+                    (!object.name || (
+                        !object.name.includes("Helper") &&
+
+                        !object.name.includes("TransformControls") &&
+                        !object.name.includes("Axes")
+                    )) &&
+                    object.parent && object.parent.type === "Scene"
+                ) {
+                    let clonedMesh = object.clone();
+                    clonedMesh.geometry = object.geometry.clone();
+                    clonedMesh.applyMatrix4(object.matrixWorld);
+                    meshesGroup.add(clonedMesh);
+                }
+            });
+
+            if (meshesGroup.children.length === 0) {
+                alert("❌ No hay objetos válidos para exportar.");
+                return;
+            }
+
+            const stlString = exporter.parse(meshesGroup);
+            forceDownload("escena.stl", stlString);
+        }
+        function forceDownload(filename, content) {
+            let blob = new Blob([content], { type: "model/stl" });
+            let link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+        document.getElementById("exportProjectButton").addEventListener("click", function () {
+            exportToSTL();
+        });
+
+        // =======================
+        // IMPORTAR PROYECTO
+        // =======================
+        function handleImportSTL(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const contents = e.target.result;
+                const loader = new THREE.STLLoader();
+                let geometry;
+                try {
+                    geometry = loader.parse(contents);
+                } catch (err) {
+                    alert("Error al leer el archivo STL. ¿Es un archivo STL válido?");
+                    return;
+                }
+
+                scene.children
+                    .filter(obj => obj.userData && obj.userData.isImportedModel)
+                    .forEach(obj => scene.remove(obj));
+
+                const material = new THREE.MeshStandardMaterial({ color: 0xcccccc });
+                const mesh = new THREE.Mesh(geometry, material);
+
+                geometry.computeBoundingBox();
+                const bbox = geometry.boundingBox;
+                const center = new THREE.Vector3();
+                bbox.getCenter(center);
+                mesh.position.set(-center.x, -center.y, -center.z);
+
+                if (camera && controls) {
+                    mesh.updateMatrixWorld();
+                    const box = new THREE.Box3().setFromObject(mesh);
+                    const boxCenter = new THREE.Vector3();
+                    box.getCenter(boxCenter);
+
+                    const boxSize = new THREE.Vector3();
+                    box.getSize(boxSize);
+                    const maxSize = Math.max(boxSize.x, boxSize.y, boxSize.z);
+                    const camDistance = maxSize * 2.5;
+
+                    camera.position.set(boxCenter.x + camDistance, boxCenter.y + camDistance, boxCenter.z + camDistance);
+                    camera.lookAt(boxCenter);
+                    controls.target.copy(boxCenter);
+                    controls.update();
+                }
+
+                if (typeof saveState === "function") saveState();
+            };
+            reader.readAsArrayBuffer(file);
+        }
+        document.getElementById("importProjectButton").addEventListener("click", function () {
+            document.getElementById("importProjectInput").click();
+        });
+        document.getElementById("importProjectInput").addEventListener("change", handleImportSTL);
+
+        // =======================
+        // EXPORTAR MEDIDAS (Formato personalizado)
+        // =======================
+        function exportMeasuresToExcel() {
+            if (!scene || !(scene instanceof THREE.Scene)) return;
+
+            // Encabezados según el formato solicitado
+            let data = [
+                ["Lámina a optimizar", "", "", "", "", "", ""],
+                [],
+                ["Cantidad", "Descripción", "Alto (cm)", "Ancho (cm)", "Puede Rotar", "Enchape", "Canto"]
+            ];
+
+            // Agrupar piezas iguales por nombre, alto y ancho
+            let piezas = {};
+            scene.traverse((object) => {
+                if (
+                    object.isMesh &&
+                    object.type === "Mesh" &&
+                    (!object.parent || object.parent.type === "Scene") &&
+                    object.userData && object.userData.name
+                ) {
+                    object.geometry.computeBoundingBox();
+                    let bbox = object.geometry.boundingBox;
+                    let width = ((bbox.max.x - bbox.min.x) * object.scale.x).toFixed(2);
+                    let height = ((bbox.max.y - bbox.min.y) * object.scale.y).toFixed(2);
+                    let descripcion = object.userData.name || "Sin Nombre";
+                    let key = `${descripcion}|${height}|${width}`;
+                    if (!piezas[key]) {
+                        piezas[key] = {
+                            cantidad: 1,
+                            descripcion,
+                            height,
+                            width
+                        };
+                    } else {
+                        piezas[key].cantidad += 1;
+                    }
+                }
+            });
+
+            // Agregar filas al Excel
+            Object.values(piezas).forEach(pieza => {
+                data.push([
+                    pieza.cantidad,
+                    pieza.descripcion,
+                    pieza.height,
+                    pieza.width,
+                    "Sí", // Puede Rotar
+                    "",   // Enchape
+                    ""    // Canto
+                ]);
+            });
+
+            if (data.length <= 3) {
+                alert("❌ No hay piezas en la escena para exportar.");
+                return;
+            }
+
+            let wb = XLSX.utils.book_new();
+            let ws = XLSX.utils.aoa_to_sheet(data);
+            XLSX.utils.book_append_sheet(wb, ws, "Lámina a optimizar");
+
+            let wbout = XLSX.write(wb, { bookType: "xlsx", type: "array" });
+            let blob = new Blob([wbout], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+
+            let link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = "lamina_a_optimizar.xlsx";
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+        document.getElementById("exportMeasuresButton").addEventListener("click", exportMeasuresToExcel);
+
+        // Eliminar con la tecla Suprimir
+        document.addEventListener("keydown", function (event) {
+            if (event.key === "Delete" || event.key === "Del") {
+                deleteSelected();
+            }
+        });
+
+
+        // =======================
+        // METRO DE MEDICIÓN TIPO SKETCHUP
+        // =======================
+        let metroPoints = [];
+        let metroActive = false;
+        let metroMeasures = []; // <-- Guarda todas las mediciones activas
+
+        // Añade estas variables globales para el preview:
+        let metroPreview = null;
+        let metroPreviewLabel = null;
+
+        function getClosestCorner(point, tolerance = 5) {
+            let closest = null;
+            let minDist = Infinity;
+            scene.children.forEach(obj => {
+                if (!obj.isMesh || obj.geometry.type !== "BoxGeometry") return;
+                obj.geometry.computeBoundingBox();
+                const bbox = obj.geometry.boundingBox;
+                const corners = [
+                    new THREE.Vector3(bbox.min.x, bbox.min.y, bbox.min.z),
+                    new THREE.Vector3(bbox.min.x, bbox.min.y, bbox.max.z),
+                    new THREE.Vector3(bbox.min.x, bbox.max.y, bbox.min.z),
+                    new THREE.Vector3(bbox.min.x, bbox.max.y, bbox.max.z),
+                    new THREE.Vector3(bbox.max.x, bbox.min.y, bbox.min.z),
+                    new THREE.Vector3(bbox.max.x, bbox.min.y, bbox.max.z),
+                    new THREE.Vector3(bbox.max.x, bbox.max.y, bbox.min.z),
+                    new THREE.Vector3(bbox.max.x, bbox.max.y, bbox.max.z),
+                ].map(v => v.clone().applyMatrix4(obj.matrixWorld));
+                corners.forEach(corner => {
+                    const dist = corner.distanceTo(point);
+                    if (dist < minDist && dist < tolerance) {
+                        minDist = dist;
+                        closest = corner.clone();
+                    }
+                });
+            });
+            return closest;
+        }
+
+        function enableMetro() {
+            showToast("Haz clic en dos puntos para medir. ESC para cancelar.");
+            metroPoints = [];
+            metroActive = true;
+            renderer.domElement.style.cursor = "crosshair";
+            // Limpia preview anterior si existe
+            removeMetroPreview();
+
+            renderer.domElement.addEventListener("pointerdown", onMetroPointerDown, false);
+            renderer.domElement.addEventListener("pointermove", onMetroPointerMove, false);
+            window.addEventListener("keydown", onMetroKeyDown, false);
+        }
+
+        function removeMetroPreview() {
+            if (metroPreview) {
+                scene.remove(metroPreview.line);
+                if (metroPreview.line.auxLines) metroPreview.line.auxLines.forEach(aux => scene.remove(aux));
+                metroPreview.line.geometry.dispose();
+                metroPreview.line.material.dispose();
+                metroPreview = null;
+            }
+            if (metroPreviewLabel && metroPreviewLabel.parentNode) {
+                metroPreviewLabel.parentNode.removeChild(metroPreviewLabel);
+                metroPreviewLabel = null;
+            }
+        }
+
+
+        // En onMetroPointerDown:
+        function onMetroPointerDown(event) {
+            if (!metroActive) return;
+            if (event.button !== 0) return;
+            controls.enablePan = true;
+            const rect = renderer.domElement.getBoundingClientRect();
+            let clientX = event.clientX, clientY = event.clientY;
+            if (event.touches && event.touches.length === 1) {
+                clientX = event.touches[0].clientX;
+                clientY = event.touches[0].clientY;
+            }
+            const mouse = new THREE.Vector2(
+                ((clientX - rect.left) / rect.width) * 2 - 1,
+                -((clientY - rect.top) / rect.height) * 2 + 1
+            );
+            const raycaster = new THREE.Raycaster();
+            raycaster.setFromCamera(mouse, camera);
+
+            let point = null;
+            const intersects = raycaster.intersectObjects(scene.children.filter(obj => obj.isMesh && obj.type === "Mesh"), true);
+            if (intersects.length > 0) {
+                point = intersects[0].point.clone();
+            } else {
+                const plane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
+                const ray = raycaster.ray;
+                const target = new THREE.Vector3();
+                if (ray.intersectPlane(plane, target)) {
+                    point = target.clone();
+                }
+            }
+
+            // --- SNAP A ESQUINA MÁS CERCANA ---
+            if (point) {
+                const snapped = getClosestCorner(point, 5); // 5 unidades de tolerancia, ajusta si quieres
+                if (snapped) point = snapped;
+                metroPoints.push(point);
+                if (metroPoints.length === 2) {
+                    addMetroMeasure(metroPoints[0], metroPoints[1]);
+                    metroPoints = [];
+                    removeMetroPreview();
+                }
+            }
+        }
+
+        // Haz lo mismo en onMetroPointerMove para el preview:
+        function onMetroPointerMove(event) {
+            if (!metroActive || metroPoints.length !== 1) return;
+            const rect = renderer.domElement.getBoundingClientRect();
+            let clientX = event.clientX, clientY = event.clientY;
+            if (event.touches && event.touches.length === 1) {
+                clientX = event.touches[0].clientX;
+                clientY = event.touches[0].clientY;
+            }
+            const mouse = new THREE.Vector2(
+                ((clientX - rect.left) / rect.width) * 2 - 1,
+                -((clientY - rect.top) / rect.height) * 2 + 1
+            );
+            const raycaster = new THREE.Raycaster();
+            raycaster.setFromCamera(mouse, camera);
+
+            let p2 = null;
+            const intersects = raycaster.intersectObjects(scene.children.filter(obj => obj.isMesh && obj.type === "Mesh"), true);
+            if (intersects.length > 0) {
+                p2 = intersects[0].point.clone();
+            } else {
+                const plane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
+                const ray = raycaster.ray;
+                const target = new THREE.Vector3();
+                if (ray.intersectPlane(plane, target)) {
+                    p2 = target.clone();
+                }
+            }
+            // --- SNAP A ESQUINA MÁS CERCANA ---
+            if (p2) {
+                const snapped = getClosestCorner(p2, 5);
+                if (snapped) p2 = snapped;
+                const p1 = metroPoints[0];
+                drawMetroPreview(p1, p2);
+            }
+        }
+
+        // Esta función solo dibuja la línea y etiqueta temporal
+        function drawMetroPreview(p1, p2) {
+            removeMetroPreview();
+            // Vector de la arista
+            const dir = new THREE.Vector3().subVectors(p2, p1).normalize();
+            const perp = new THREE.Vector3(-dir.z, 0, dir.x).normalize().multiplyScalar(5);
+            const cotaP1 = p1.clone().add(perp);
+            const cotaP2 = p2.clone().add(perp);
+
+            const cotaGeometry = new THREE.BufferGeometry().setFromPoints([cotaP1, cotaP2]);
+            const cotaMaterial = new THREE.LineBasicMaterial({ color: 0x8888ff, linewidth: 1 });
+            const line = new THREE.Line(cotaGeometry, cotaMaterial);
+            scene.add(line);
+
+            // Líneas auxiliares
+            const aux1 = new THREE.BufferGeometry().setFromPoints([p1, cotaP1]);
+            const aux2 = new THREE.BufferGeometry().setFromPoints([p2, cotaP2]);
+            const auxMaterial = new THREE.LineDashedMaterial({ color: 0xcccccc, dashSize: 2, gapSize: 2 });
+            const auxLine1 = new THREE.Line(aux1, auxMaterial);
+            const auxLine2 = new THREE.Line(aux2, auxMaterial);
+            scene.add(auxLine1);
+            scene.add(auxLine2);
+
+            line.auxLines = [auxLine1, auxLine2];
+
+            // Etiqueta
+            const mid = cotaP1.clone().add(cotaP2).multiplyScalar(0.5);
+            const distanceCm = p1.distanceTo(p2) * 100;
+            let distanceText = distanceCm >= 100 ? `${(distanceCm / 100).toFixed(2)} cm` : `${distanceCm.toFixed(1)} mm`;
+
+            const label = document.createElement("input");
+            label.type = "text";
+            label.value = distanceText;
+            label.style.position = "fixed";
+            label.style.background = "#222e3c";
+            label.style.color = "#fff";
+            label.style.padding = "6px 14px";
+            label.style.borderRadius = "8px";
+            label.style.fontSize = "18px";
+            label.style.zIndex = "9999";
+            label.style.pointerEvents = "auto";
+            label.style.cursor = "pointer";
+            label.style.border = "1px solid #444";
+            label.style.width = "110px";
+            label.style.textAlign = "center";
+            const vector = mid.clone().project(camera);
+            const x = (vector.x * 0.5 + 0.5) * window.innerWidth;
+            const y = (-vector.y * 0.5 + 0.5) * window.innerHeight;
+            label.style.left = `${x}px`;
+            label.style.top = `${y - 20}px`;
+            document.body.appendChild(label);
+
+            metroPreview = { line };
+            metroPreviewLabel = label;
+        }
+
+        // Esta función sí agrega la medición definitiva
+        function addMetroMeasure(p1, p2) {
+            // Vector de la arista
+            const dir = new THREE.Vector3().subVectors(p2, p1).normalize();
+            const perp = new THREE.Vector3(-dir.z, 0, dir.x).normalize().multiplyScalar(5);
+            const cotaP1 = p1.clone().add(perp);
+            const cotaP2 = p2.clone().add(perp);
+
+            const cotaGeometry = new THREE.BufferGeometry().setFromPoints([cotaP1, cotaP2]);
+            const cotaMaterial = new THREE.LineBasicMaterial({ color: 0xffd700, linewidth: 2 });
+            const line = new THREE.Line(cotaGeometry, cotaMaterial);
+            scene.add(line);
+
+            // Líneas auxiliares
+            const aux1 = new THREE.BufferGeometry().setFromPoints([p1, cotaP1]);
+            const aux2 = new THREE.BufferGeometry().setFromPoints([p2, cotaP2]);
+            const auxMaterial = new THREE.LineDashedMaterial({ color: 0xffffff, dashSize: 2, gapSize: 2 });
+            const auxLine1 = new THREE.Line(aux1, auxMaterial);
+            const auxLine2 = new THREE.Line(aux2, auxMaterial);
+            scene.add(auxLine1);
+            scene.add(auxLine2);
+
+            line.auxLines = [auxLine1, auxLine2];
+
+            // Etiqueta
+            const mid = cotaP1.clone().add(cotaP2).multiplyScalar(0.5);
+            const distanceCm = p1.distanceTo(p2) * 100;
+            let distanceText = distanceCm >= 100 ? `${(distanceCm / 100).toFixed(2)} cm` : `${distanceCm.toFixed(1)} mm`;
+
+            const label = document.createElement("input");
+            label.type = "text";
+            label.value = distanceText;
+            label.style.position = "fixed";
+            label.style.background = "#222e3c";
+            label.style.color = "#fff";
+            label.style.padding = "6px 14px";
+            label.style.borderRadius = "8px";
+            label.style.fontSize = "18px";
+            label.style.zIndex = "9999";
+            label.style.pointerEvents = "auto";
+            label.style.cursor = "pointer";
+            label.style.border = "1px solid #444";
+            label.style.width = "110px";
+            label.style.textAlign = "center";
+            const vector = mid.clone().project(camera);
+            const x = (vector.x * 0.5 + 0.5) * window.innerWidth;
+            const y = (-vector.y * 0.5 + 0.5) * window.innerHeight;
+            label.style.left = `${x}px`;
+            label.style.top = `${y - 20}px`;
+            document.body.appendChild(label);
+
+            label.addEventListener("keydown", function (e) {
+                if (e.key === "Enter") {
+                    let val = label.value.replace(",", ".").toLowerCase().replace(/\s+/g, "");
+                    let newDist;
+                    if (val.endsWith("mm")) {
+                        newDist = parseFloat(val.replace("mm", ""));
+                    } else if (val.endsWith("m")) {
+                        newDist = parseFloat(val.replace("cm", "")) * 100;
+                    } else {
+                        newDist = parseFloat(val);
+                    }
+                    if (isNaN(newDist) || newDist <= 0) {
+                        showToast("Medida inválida");
+                        return;
+                    }
+                    const dir = new THREE.Vector3().subVectors(p2, p1).normalize();
+                    const newP2 = p1.clone().add(dir.multiplyScalar(newDist / 100));
+                    removeSingleMeasure(line, label);
+                    addMetroMeasure(p1, newP2);
+
+                    // --- DESELECCIONA cualquier objeto y oculta controles ---
+                    selectedObject = null;
+                    selectedObjects = [];
+                    transformControls.detach();
+                    updateRotationDisplay();
+                }
+            });
+
+            label.ondblclick = function () {
+                removeSingleMeasure(line, label);
+            };
+
+            metroMeasures.push({ line, label });
+        }
+        // Elimina una sola medición (línea y etiqueta)
+        function removeSingleMeasure(line, label) {
+            scene.remove(line);
+            if (line.auxLines) line.auxLines.forEach(aux => scene.remove(aux));
+            line.geometry.dispose();
+            line.material.dispose();
+            if (label && label.parentNode) label.parentNode.removeChild(label);
+            metroMeasures = metroMeasures.filter(m => m.line !== line);
+        }
+
+        // Cancela el modo metro con ESC
+        function onMetroKeyDown(event) {
+            if (event.key === "Escape") {
+                metroActive = false;
+                metroPoints = [];
+                removeMetroPreview();
+                renderer.domElement.style.cursor = "";
+                renderer.domElement.removeEventListener("pointerdown", onMetroPointerDown);
+                renderer.domElement.removeEventListener("pointermove", onMetroPointerMove);
+                window.removeEventListener("keydown", onMetroKeyDown);
+            }
+        }
+
+        // =======================
+        // HABILITAR MODO RECTÁNGULO
+        // =======================
+
+        let rectangleModeActive = false;
+        let rectanglePoints = [];
+        let rectanglePreview = null;
+
+        document.getElementById("rectangleModeButton").addEventListener("click", enableRectangleMode);
+
+        function enableRectangleMode() {
+            rectangleModeActive = true;
+            rectanglePoints = [];
+            removeRectanglePreview();
+            renderer.domElement.style.cursor = "crosshair";
+            showToast("Haz clic en dos puntos para crear un rectángulo. ESC para cancelar.");
+            renderer.domElement.addEventListener("pointerdown", onRectanglePointerDown, false);
+            renderer.domElement.addEventListener("pointermove", onRectanglePointerMove, false);
+            window.addEventListener("keydown", onRectangleKeyDown, false);
+        }
+
+        function onRectanglePointerDown(event) {
+            if (!rectangleModeActive) return;
+            const rect = renderer.domElement.getBoundingClientRect();
+            let clientX = event.clientX, clientY = event.clientY;
+            if (event.touches && event.touches.length === 1) {
+                clientX = event.touches[0].clientX;
+                clientY = event.touches[0].clientY;
+            }
+            const mouse = new THREE.Vector2(
+                ((clientX - rect.left) / rect.width) * 2 - 1,
+                -((clientY - rect.top) / rect.height) * 2 + 1
+            );
+            const raycaster = new THREE.Raycaster();
+            raycaster.setFromCamera(mouse, camera);
+
+            // Intersecta con el plano base XZ (y=0)
+            const plane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
+            const ray = raycaster.ray;
+            const point = new THREE.Vector3();
+            if (ray.intersectPlane(plane, point)) {
+                rectanglePoints.push(point.clone());
+                if (rectanglePoints.length === 2) {
+                    createRectangleFromPoints(rectanglePoints[0], rectanglePoints[1]);
+                    disableRectangleMode();
+                }
+            }
+        }
+
+        function onRectanglePointerMove(event) {
+            if (!rectangleModeActive || rectanglePoints.length !== 1) return;
+            const rect = renderer.domElement.getBoundingClientRect();
+            let clientX = event.clientX, clientY = event.clientY;
+            if (event.touches && event.touches.length === 1) {
+                clientX = event.touches[0].clientX;
+                clientY = event.touches[0].clientY;
+            }
+            const mouse = new THREE.Vector2(
+                ((clientX - rect.left) / rect.width) * 2 - 1,
+                -((clientY - rect.top) / rect.height) * 2 + 1
+            );
+            const raycaster = new THREE.Raycaster();
+            raycaster.setFromCamera(mouse, camera);
+
+            // Intersecta con el plano base XZ (y=0)
+            const plane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
+            const ray = raycaster.ray;
+            const point = new THREE.Vector3();
+            if (ray.intersectPlane(plane, point)) {
+                drawRectanglePreview(rectanglePoints[0], point);
+            }
+        }
+
+        function onRectangleKeyDown(event) {
+            if (event.key === "Escape") {
+                disableRectangleMode();
+            }
+        }
+
+        function createRectangleFromPoints(p1, p2) {
+            removeRectanglePreview();
+            // Calcula centro, ancho y profundidad
+            const center = new THREE.Vector3(
+                (p1.x + p2.x) / 2,
+                0,
+                (p1.z + p2.z) / 2
+            );
+            const width = Math.abs(p2.x - p1.x);
+            const depth = Math.abs(p2.z - p1.z);
+            const height = parseFloat(prompt("Altura del rectángulo (cm):", "10")) || 10;
+
+            if (width < 0.1 || depth < 0.1) {
+                showToast("El rectángulo es demasiado pequeño.");
+                saveState();
+                return;
+            }
+
+            const geometry = new THREE.BoxGeometry(width, height, depth);
+            const material = new THREE.MeshStandardMaterial({ color: 0x808080 });
+            const mesh = new THREE.Mesh(geometry, material);
+            mesh.position.set(center.x, height / 2, center.z);
+            mesh.userData.name = "Rectángulo";
+
+            // Bordes blancos
+            let edges = new THREE.EdgesGeometry(geometry);
+            let edgesMaterial = new THREE.LineBasicMaterial({ color: 0xffffff });
+            let edgesMesh = new THREE.LineSegments(edges, edgesMaterial);
+            mesh.add(edgesMesh);
+
+            scene.add(mesh);
+
+            // Limpia selección y controles
+            selectedObject = null;
+            selectedObjects = [];
+            transformControls.detach();
+
+            saveState();
+            showToast("Rectángulo creado");
+
+            // --- NUEVO: deselecciona después del clic ---
+            setTimeout(() => {
+                selectedObject = null;
+                selectedObjects = [];
+                transformControls.detach();
+                updateRotationDisplay();
+            }, 50);
+        }
+
+        function disableRectangleMode() {
+            rectangleModeActive = false;
+            rectanglePoints = [];
+            removeRectanglePreview();
+            renderer.domElement.style.cursor = "";
+            renderer.domElement.removeEventListener("pointerdown", onRectanglePointerDown);
+            renderer.domElement.removeEventListener("pointermove", onRectanglePointerMove);
+            window.removeEventListener("keydown", onRectangleKeyDown);
+            saveState(); // <-- Así puedes rehacer la previa si lo deseas
+        }
+
+        function drawRectanglePreview(p1, p2) {
+            removeRectanglePreview();
+            const width = Math.abs(p2.x - p1.x);
+            const depth = Math.abs(p2.z - p1.z);
+            const height = parseFloat(document.getElementById("height")?.value) || 10;
+            if (width < 0.01 || depth < 0.01) return;
+
+            const center = new THREE.Vector3(
+                (p1.x + p2.x) / 2,
+                height / 2,
+                (p1.z + p2.z) / 2
+            );
+            const geometry = new THREE.BoxGeometry(width, height, depth);
+            const material = new THREE.MeshBasicMaterial({ color: 0x00ffcc, opacity: 0.3, transparent: true });
+            const mesh = new THREE.Mesh(geometry, material);
+
+            // Bordes
+            let edges = new THREE.EdgesGeometry(geometry);
+            let edgesMaterial = new THREE.LineBasicMaterial({ color: 0x00ffcc });
+            let edgesMesh = new THREE.LineSegments(edges, edgesMaterial);
+            mesh.add(edgesMesh);
+
+            mesh.position.copy(center);
+            rectanglePreview = mesh;
+            scene.add(mesh);
+        }
+
+        function removeRectanglePreview() {
+            if (rectanglePreview) {
+                scene.remove(rectanglePreview);
+                rectanglePreview.geometry.dispose();
+                if (rectanglePreview.material) rectanglePreview.material.dispose();
+                rectanglePreview = null;
+            }
+        }
+
+        function snapToClosestCorner(obj) {
+            if (!obj || !obj.geometry) return;
+
+            // Tolerancia de snapping (ajusta según tu escala)
+            const SNAP_TOLERANCE = 2; // en unidades de escena
+
+            // Obtén los vértices del objeto movido (en espacio mundial)
+            obj.geometry.computeBoundingBox();
+            const bbox = obj.geometry.boundingBox;
+            const vertices = [
+                new THREE.Vector3(bbox.min.x, bbox.min.y, bbox.min.z),
+                new THREE.Vector3(bbox.min.x, bbox.min.y, bbox.max.z),
+                new THREE.Vector3(bbox.min.x, bbox.max.y, bbox.min.z),
+                new THREE.Vector3(bbox.min.x, bbox.max.y, bbox.max.z),
+                new THREE.Vector3(bbox.max.x, bbox.min.y, bbox.min.z),
+                new THREE.Vector3(bbox.max.x, bbox.min.y, bbox.max.z),
+                new THREE.Vector3(bbox.max.x, bbox.max.y, bbox.min.z),
+                new THREE.Vector3(bbox.max.x, bbox.max.y, bbox.max.z),
+            ].map(v => v.clone().applyMatrix4(obj.matrixWorld));
+
+            // Busca el vértice más cercano de otros objetos
+            let closest = null;
+            let minDist = Infinity;
+
+            scene.children.forEach(other => {
+                if (other === obj || !other.isMesh || !other.geometry) return;
+                other.geometry.computeBoundingBox();
+                const obbox = other.geometry.boundingBox;
+                const overts = [
+                    new THREE.Vector3(obbox.min.x, obbox.min.y, obbox.min.z),
+                    new THREE.Vector3(obbox.min.x, obbox.min.y, obbox.max.z),
+                    new THREE.Vector3(obbox.min.x, obbox.max.y, obbox.min.z),
+                    new THREE.Vector3(obbox.min.x, obbox.max.y, obbox.max.z),
+                    new THREE.Vector3(obbox.max.x, obbox.min.y, obbox.min.z),
+                    new THREE.Vector3(obbox.max.x, obbox.min.y, obbox.max.z),
+                    new THREE.Vector3(obbox.max.x, obbox.max.y, obbox.min.z),
+                    new THREE.Vector3(obbox.max.x, obbox.max.y, obbox.max.z),
+                ].map(v => v.clone().applyMatrix4(other.matrixWorld));
+
+                vertices.forEach((v1, i1) => {
+                    overts.forEach((v2, i2) => {
+                        const dist = v1.distanceTo(v2);
+                        if (dist < minDist && dist < SNAP_TOLERANCE) {
+                            minDist = dist;
+                            closest = { v1, v2, i1, i2 };
+                        }
+                    });
+                });
+            });
+
+            // Si encontró un par cercano, mueve el objeto para alinear esos vértices
+            if (closest) {
+                const offset = new THREE.Vector3().subVectors(closest.v2, closest.v1);
+                obj.position.add(offset);
+            }
+        }
+        // =======================
+        // SNAPPING
+        // =======================
+        function snapToClosestSnapPoint(obj) {
+            if (!obj || !obj.geometry) return;
+
+            const SNAP_TOLERANCE = 2;
+
+            // Calcula bounding box y puntos del objeto movido
+            obj.geometry.computeBoundingBox();
+            const bbox = obj.geometry.boundingBox;
+            const min = bbox.min, max = bbox.max;
+
+            // Vértices
+            const vertices = [
+                new THREE.Vector3(min.x, min.y, min.z),
+                new THREE.Vector3(min.x, min.y, max.z),
+                new THREE.Vector3(min.x, max.y, min.z),
+                new THREE.Vector3(min.x, max.y, max.z),
+                new THREE.Vector3(max.x, min.y, min.z),
+                new THREE.Vector3(max.x, min.y, max.z),
+                new THREE.Vector3(max.x, max.y, min.z),
+                new THREE.Vector3(max.x, max.y, max.z),
+            ];
+
+            // Centros de caras
+            const faceCenters = [
+                new THREE.Vector3((min.x + max.x) / 2, min.y, (min.z + max.z) / 2), // -Y
+                new THREE.Vector3((min.x + max.x) / 2, max.y, (min.z + max.z) / 2), // +Y
+                new THREE.Vector3(min.x, (min.y + max.y) / 2, (min.z + max.z) / 2), // -X
+                new THREE.Vector3(max.x, (min.y + max.y) / 2, (min.z + max.z) / 2), // +X
+                new THREE.Vector3((min.x + max.x) / 2, (min.y + max.y) / 2, min.z), // -Z
+                new THREE.Vector3((min.x + max.x) / 2, (min.y + max.y) / 2, max.z), // +Z
+            ];
+
+            // Puntos medios de aristas (12 aristas)
+            const edgeMids = [
+                // X edges
+                new THREE.Vector3(min.x, min.y, min.z).lerp(new THREE.Vector3(max.x, min.y, min.z), 0.5),
+                new THREE.Vector3(min.x, min.y, max.z).lerp(new THREE.Vector3(max.x, min.y, max.z), 0.5),
+                new THREE.Vector3(min.x, max.y, min.z).lerp(new THREE.Vector3(max.x, max.y, min.z), 0.5),
+                new THREE.Vector3(min.x, max.y, max.z).lerp(new THREE.Vector3(max.x, max.y, max.z), 0.5),
+                // Y edges
+                new THREE.Vector3(min.x, min.y, min.z).lerp(new THREE.Vector3(min.x, max.y, min.z), 0.5),
+                new THREE.Vector3(max.x, min.y, min.z).lerp(new THREE.Vector3(max.x, max.y, min.z), 0.5),
+                new THREE.Vector3(min.x, min.y, max.z).lerp(new THREE.Vector3(min.x, max.y, max.z), 0.5),
+                new THREE.Vector3(max.x, min.y, max.z).lerp(new THREE.Vector3(max.x, max.y, max.z), 0.5),
+                // Z edges
+                new THREE.Vector3(min.x, min.y, min.z).lerp(new THREE.Vector3(min.x, min.y, max.z), 0.5),
+                new THREE.Vector3(max.x, min.y, min.z).lerp(new THREE.Vector3(max.x, min.y, max.z), 0.5),
+                new THREE.Vector3(min.x, max.y, min.z).lerp(new THREE.Vector3(min.x, max.y, max.z), 0.5),
+                new THREE.Vector3(max.x, max.y, min.z).lerp(new THREE.Vector3(max.x, max.y, max.z), 0.5),
+            ];
+
+            // Todos los puntos de snap del objeto movido (en espacio mundial)
+            const snapPoints = [...vertices, ...faceCenters, ...edgeMids].map(v => v.clone().applyMatrix4(obj.matrixWorld));
+
+            let closest = null;
+            let minDist = Infinity;
+
+            scene.children.forEach(other => {
+                if (other === obj || !other.isMesh || !other.geometry) return;
+                other.geometry.computeBoundingBox();
+                const obbox = other.geometry.boundingBox;
+                const omin = obbox.min, omax = obbox.max;
+
+                // Vértices del otro objeto
+                const overts = [
+                    new THREE.Vector3(omin.x, omin.y, omin.z),
+                    new THREE.Vector3(omin.x, omin.y, omax.z),
+                    new THREE.Vector3(omin.x, omax.y, omin.z),
+                    new THREE.Vector3(omin.x, omax.y, omax.z),
+                    new THREE.Vector3(omax.x, omin.y, omin.z),
+                    new THREE.Vector3(omax.x, omin.y, omax.z),
+                    new THREE.Vector3(omax.x, omax.y, omin.z),
+                    new THREE.Vector3(omax.x, omax.y, omax.z),
+                ];
+                // Centros de caras del otro objeto
+                const ofaceCenters = [
+                    new THREE.Vector3((omin.x + omax.x) / 2, omin.y, (omin.z + omax.z) / 2),
+                    new THREE.Vector3((omin.x + omax.x) / 2, omax.y, (omin.z + omax.z) / 2),
+                    new THREE.Vector3(omin.x, (omin.y + omax.y) / 2, (omin.z + omax.z) / 2),
+                    new THREE.Vector3(omax.x, (omin.y + omax.y) / 2, (omin.z + omax.z) / 2),
+                    new THREE.Vector3((omin.x + omax.x) / 2, (omin.y + omax.y) / 2, omin.z),
+                    new THREE.Vector3((omin.x + omax.x) / 2, (omin.y + omax.y) / 2, omax.z),
+                ];
+                // Puntos medios de aristas del otro objeto
+                const oedgeMids = [
+                    // X edges
+                    new THREE.Vector3(omin.x, omin.y, omin.z).lerp(new THREE.Vector3(omax.x, omin.y, omin.z), 0.5),
+                    new THREE.Vector3(omin.x, omin.y, omax.z).lerp(new THREE.Vector3(omax.x, omin.y, omax.z), 0.5),
+                    new THREE.Vector3(omin.x, omax.y, omin.z).lerp(new THREE.Vector3(omax.x, omax.y, omin.z), 0.5),
+                    new THREE.Vector3(omin.x, omax.y, omax.z).lerp(new THREE.Vector3(omax.x, omax.y, omax.z), 0.5),
+                    // Y edges
+                    new THREE.Vector3(omin.x, omin.y, omin.z).lerp(new THREE.Vector3(omin.x, omax.y, omin.z), 0.5),
+                    new THREE.Vector3(omax.x, omin.y, omin.z).lerp(new THREE.Vector3(omax.x, omax.y, omin.z), 0.5),
+                    new THREE.Vector3(omin.x, omin.y, omax.z).lerp(new THREE.Vector3(omin.x, omax.y, omax.z), 0.5),
+                    new THREE.Vector3(omax.x, omin.y, omax.z).lerp(new THREE.Vector3(omax.x, omax.y, omax.z), 0.5),
+                    // Z edges
+                    new THREE.Vector3(omin.x, omin.y, omin.z).lerp(new THREE.Vector3(omin.x, omin.y, omax.z), 0.5),
+                    new THREE.Vector3(omax.x, omin.y, omin.z).lerp(new THREE.Vector3(omax.x, omin.y, omax.z), 0.5),
+                    new THREE.Vector3(omin.x, omax.y, omin.z).lerp(new THREE.Vector3(omin.x, omax.y, omax.z), 0.5),
+                    new THREE.Vector3(omax.x, omax.y, omin.z).lerp(new THREE.Vector3(omax.x, omax.y, omax.z), 0.5),
+                ];
+
+                const otherSnapPoints = [...overts, ...ofaceCenters, ...oedgeMids].map(v => v.clone().applyMatrix4(other.matrixWorld));
+
+                snapPoints.forEach((v1) => {
+                    otherSnapPoints.forEach((v2) => {
+                        const dist = v1.distanceTo(v2);
+                        if (dist < minDist && dist < SNAP_TOLERANCE) {
+                            minDist = dist;
+                            closest = { v1, v2 };
+                        }
+                    });
+                });
+            });
+
+            // Si encontró un par cercano, mueve el objeto para alinear esos puntos
+            if (closest) {
+                const offset = new THREE.Vector3().subVectors(closest.v2, closest.v1);
+                obj.position.add(offset);
+            }
+        }
+
+        // ==========================================
+        // PUSH/PULL MODE
+        // ==========================================
+
+        let pushPullModeActive = false;
+        let pushPullTarget = null;
+        let pushPullFaceIndex = null;
+        let pushPullOriginal = null;
+
+        document.getElementById("pushPullModeBtn").addEventListener("click", enablePushPullMode);
+        document.getElementById("applyPushPullBtn").addEventListener("click", applyPushPull);
+        document.getElementById("cancelPushPullBtn").addEventListener("click", disablePushPullMode);
+
+        function enablePushPullMode() {
+            pushPullModeActive = true;
+            pushPullTarget = null;
+            pushPullFaceIndex = null;
+            pushPullOriginal = null;
+            document.getElementById("pushPullPanel").style.display = "block";
+            document.getElementById("pushPullInfo").innerText = "Haz clic en una cara de un cubo para modificar su medida.";
+            renderer.domElement.style.cursor = "crosshair";
+            renderer.domElement.addEventListener("pointerdown", onPushPullPointerDown, false);
+        }
+
+        function disablePushPullMode() {
+            pushPullModeActive = false;
+            pushPullTarget = null;
+            pushPullFaceIndex = null;
+            pushPullOriginal = null;
+            document.getElementById("pushPullPanel").style.display = "none";
+            renderer.domElement.style.cursor = "";
+            renderer.domElement.removeEventListener("pointerdown", onPushPullPointerDown);
+        }
+
+        function onPushPullPointerDown(event) {
+            if (!pushPullModeActive) return;
+            const rect = renderer.domElement.getBoundingClientRect();
+            let clientX = event.clientX, clientY = event.clientY;
+            if (event.touches && event.touches.length === 1) {
+                clientX = event.touches[0].clientX;
+                clientY = event.touches[0].clientY;
+            }
+            const mouse = new THREE.Vector2(
+                ((clientX - rect.left) / rect.width) * 2 - 1,
+                -((clientY - rect.top) / rect.height) * 2 + 1
+            );
+            const raycaster = new THREE.Raycaster();
+            raycaster.setFromCamera(mouse, camera);
+
+            // Solo cubos
+            const cubes = scene.children.filter(obj => obj.isMesh && obj.geometry && obj.geometry.type === "BoxGeometry");
+            const intersects = raycaster.intersectObjects(cubes, false);
+            if (intersects.length > 0) {
+                pushPullTarget = intersects[0].object;
+                pushPullFaceIndex = intersects[0].faceIndex;
+                pushPullOriginal = {
+                    width: pushPullTarget.geometry.parameters.width,
+                    height: pushPullTarget.geometry.parameters.height,
+                    depth: pushPullTarget.geometry.parameters.depth,
+                    position: pushPullTarget.position.clone()
+                };
+
+                // Determina el eje y signo de la cara seleccionada
+                const face = intersects[0].face;
+                let axis, sign, currentValue;
+                if (Math.abs(face.normal.x) > 0.9) {
+                    axis = "x";
+                    sign = Math.sign(face.normal.x);
+                    currentValue = pushPullOriginal.width;
+                } else if (Math.abs(face.normal.y) > 0.9) {
+                    axis = "y";
+                    sign = Math.sign(face.normal.y);
+                    currentValue = pushPullOriginal.height;
+                } else {
+                    axis = "z";
+                    sign = Math.sign(face.normal.z);
+                    currentValue = pushPullOriginal.depth;
+                }
+                // Guarda para aplicar
+                pushPullTarget._pushPullAxis = axis;
+                pushPullTarget._pushPullSign = sign;
+
+                document.getElementById("pushPullValue").value = currentValue;
+                document.getElementById("pushPullInfo").innerText = `Cara seleccionada: ${axis.toUpperCase()} (${sign > 0 ? "+" : "-"})`;
+            }
+        }
+
+        function applyPushPull() {
+            if (!pushPullTarget || pushPullFaceIndex === null) return;
+            let newValue = parseFloat(document.getElementById("pushPullValue").value);
+            if (isNaN(newValue) || newValue <= 0) {
+                showToast("Medida inválida");
+                return;
+            }
+
+            // Usa los datos guardados en el objeto
+            let axis = pushPullTarget._pushPullAxis;
+            let sign = pushPullTarget._pushPullSign;
+
+            let width = pushPullTarget.geometry.parameters.width;
+            let height = pushPullTarget.geometry.parameters.height;
+            let depth = pushPullTarget.geometry.parameters.depth;
+            let pos = pushPullTarget.position.clone();
+
+            if (axis === "x") {
+                let delta = newValue - width;
+                pos.x += (delta / 2) * sign;
+                width = newValue;
+            } else if (axis === "y") {
+                let delta = newValue - height;
+                pos.y += (delta / 2) * sign;
+                height = newValue;
+            } else if (axis === "z") {
+                let delta = newValue - depth;
+                pos.z += (delta / 2) * sign;
+                depth = newValue;
+            }
+
+            // Reemplaza la geometría y actualiza posición
+            pushPullTarget.geometry.dispose();
+            pushPullTarget.geometry = new THREE.BoxGeometry(width, height, depth);
+            pushPullTarget.position.copy(pos);
+
+            // Actualiza los bordes
+            if (pushPullTarget.children.length > 0) {
+                pushPullTarget.remove(pushPullTarget.children[0]);
+            }
+            let edges = new THREE.EdgesGeometry(pushPullTarget.geometry);
+            let edgesMaterial = new THREE.LineBasicMaterial({ color: 0xffffff });
+            let edgesMesh = new THREE.LineSegments(edges, edgesMaterial);
+            pushPullTarget.add(edgesMesh);
+
+            saveState();
+            showToast("Medida modificada");
+            disablePushPullMode();
+        }
+
+        // Opcional: ESC para cancelar
+        window.addEventListener("keydown", function (e) {
+            if (pushPullModeActive && e.key === "Escape") {
+                disablePushPullMode();
+            }
+        });
+
+        // Desactiva el movimiento de la cámara cuando Ctrl está presionado
+        window.addEventListener("keydown", function (e) {
+            if (e.key === "Control") {
+                controls.enabled = false;
+            }
+        });
+        window.addEventListener("keyup", function (e) {
+            if (e.key === "Control") {
+                controls.enabled = true;
+            }
+        });
+
+        function onDeselect(event) {
+            const menu = document.getElementById("menu");
+            if (menu.contains(event.target)) return;
+            event.preventDefault();
+            // Limpia selección múltiple visual
+            const meshes = scene.children.filter(obj => obj.isMesh && obj.type === "Mesh");
+            meshes.forEach(obj => {
+                if (obj.children.length > 0 && obj.children[0].material) {
+                    obj.children[0].material.color.set(0xffffff);
+                }
+                if (obj.material) obj.material.color.set(0x808080);
+            });
+            selectedObject = null;
+            selectedObjects = [];
+            transformControls.detach();
+            updateRotationDisplay();
+        }
+
+        // ==================================================================
+        // INICIAR APLICACIÓN
+        // ==========================================
+        init();
+        updateTextureOptions(); // <-- Esto carga las texturas al iniciare
+
+
+        // =======================
+        // DRAG SELECT CON CTRL
+        // =======================
+        let isDragSelecting = false;
+        let dragStart = null;
+        let dragRect = null;
+        let dragRectDiv = null;
+        let selectedObjects = [];
+        let multiSelectGroup = null;
+
+        renderer.domElement.addEventListener("pointerdown", function (event) {
+            // Solo con Ctrl y botón izquierdo, y si NO está activo metro, rectángulo o push/pull
+            if (!event.ctrlKey || event.button !== 0) return;
+            if (metroActive || rectangleModeActive || pushPullModeActive) return;
+            isDragSelecting = true;
+            dragStart = { x: event.clientX, y: event.clientY };
+
+            // Crea el div visual del rectángulo
+            dragRectDiv = document.createElement("div");
+            dragRectDiv.style.position = "fixed";
+            dragRectDiv.style.border = "2px solid #007BFF";
+            dragRectDiv.style.background = "rgba(0,123,255,0.08)";
+            dragRectDiv.style.pointerEvents = "none";
+            dragRectDiv.style.zIndex = "99999";
+            document.body.appendChild(dragRectDiv);
+
+            function onPointerMove(e) {
+                if (!isDragSelecting) return;
+                const x1 = Math.min(dragStart.x, e.clientX);
+                const y1 = Math.min(dragStart.y, e.clientY);
+                const x2 = Math.max(dragStart.x, e.clientX);
+                const y2 = Math.max(dragStart.y, e.clientY);
+                dragRect = { x1, y1, x2, y2 };
+                dragRectDiv.style.left = x1 + "px";
+                dragRectDiv.style.top = y1 + "px";
+                dragRectDiv.style.width = (x2 - x1) + "px";
+                dragRectDiv.style.height = (y2 - y1) + "px";
+            }
+
+            function onPointerUp(e) {
+                if (!isDragSelecting) return;
+                isDragSelecting = false;
+                document.removeEventListener("pointermove", onPointerMove);
+                document.removeEventListener("pointerup", onPointerUp);
+
+                // Normaliza el rectángulo
+                const rx1 = Math.min(dragRect.x1, dragRect.x2);
+                const rx2 = Math.max(dragRect.x1, dragRect.x2);
+                const ry1 = Math.min(dragRect.y1, dragRect.y2);
+                const ry2 = Math.max(dragRect.y1, dragRect.y2);
+
+                selectedObjects = [];
+                const meshes = scene.children.filter(obj => obj.isMesh && obj.type === "Mesh");
+                const rectCanvas = renderer.domElement.getBoundingClientRect();
+
+                meshes.forEach(obj => {
+                    obj.geometry.computeBoundingBox();
+                    const bbox = obj.geometry.boundingBox;
+                    const center = bbox.getCenter(new THREE.Vector3()).applyMatrix4(obj.matrixWorld);
+                    const vector = center.clone().project(camera);
+                    // Coordenadas relativas al canvas, no a la ventana
+                    const sx = (vector.x * 0.5 + 0.5) * rectCanvas.width + rectCanvas.left;
+                    const sy = (-vector.y * 0.5 + 0.5) * rectCanvas.height + rectCanvas.top;
+                    if (
+                        sx >= rx1 && sx <= rx2 &&
+                        sy >= ry1 && sy <= ry2
+                    ) {
+                        selectedObjects.push(obj);
+                    }
+                });
+
+                meshes.forEach(obj => {
+                    if (obj.children.length > 0 && obj.children[0].material) {
+                        obj.children[0].material.color.set(selectedObjects.includes(obj) ? 0x007BFF : 0xffffff);
+                    }
+                    if (obj.material) obj.material.color.set(0x808080);
+                });
+
+                // --- NUEVO: Devuelve hijos de grupo anterior a la escena ---
+                if (selectedObjects.length > 1) {
+                    // Elimina grupo anterior si existe
+                    if (multiSelectGroup && multiSelectGroup.children.length > 0) {
+                        const children = [...multiSelectGroup.children];
+                        children.forEach(obj => {
+                            // Calcula la posición global antes de quitar del grupo
+                            const worldPos = obj.getWorldPosition(new THREE.Vector3());
+                            scene.add(obj);
+                            obj.position.copy(worldPos);
+                        });
+                        scene.remove(multiSelectGroup);
+                        multiSelectGroup = null;
+                    }
+                    // --- FIN NUEVO ---
+
+                    multiSelectGroup = new THREE.Group();
+                    // Solo agrega objetos cuyo padre es la escena (evita anidar grupos)
+                    let filtered = [];
+                    selectedObjects.forEach(obj => {
+                        if (obj.parent === scene) {
+                            multiSelectGroup.add(obj);
+                            filtered.push(obj);
+                        }
+                    });
+                    selectedObjects = filtered; // <-- Solo los realmente agrupados
+                    if (multiSelectGroup.children.length > 0) {
+                        scene.add(multiSelectGroup);
+                        selectedObject = multiSelectGroup;
+                        transformControls.attach(multiSelectGroup);
+                        transformControls.setMode("translate");
+                    } else {
+                        selectedObject = null;
+                        transformControls.detach();
+                    }
+                } else if (selectedObjects.length === 1) {
+                    selectedObject = selectedObjects[0];
+                    transformControls.attach(selectedObject);
+                    transformControls.setMode("translate");
+                } else {
+                    selectedObject = null;
+                    transformControls.detach();
+                }
+
+                if (dragRectDiv && dragRectDiv.parentNode) dragRectDiv.parentNode.removeChild(dragRectDiv);
+                dragRectDiv = null;
+            }
+
+            document.addEventListener("pointermove", onPointerMove);
+            document.addEventListener("pointerup", onPointerUp);
+        });
+
+
+        function onPointerDown(event) {
+            if (isDragSelecting) return; // <-- Esto evita conflicto con drag select
+            if (isDragging) return;
+            if (metroActive) return;
+            const menu = document.getElementById("menu");
+            if (menu.contains(event.target)) return;
+            event.preventDefault();
+
+            const rect = renderer.domElement.getBoundingClientRect();
+            let clientX, clientY;
+            if (event.touches && event.touches.length === 1) {
+                clientX = event.touches[0].clientX;
+                clientY = event.touches[0].clientY;
+            } else {
+                clientX = event.clientX;
+                clientY = event.clientY;
+            }
+            const mouse = new THREE.Vector2(
+                ((clientX - rect.left) / rect.width) * 2 - 1,
+                -((clientY - rect.top) / rect.height) * 2 + 1
+            );
+            const raycaster = new THREE.Raycaster();
+            const selectableObjects = scene.children.filter(obj => obj.isMesh && obj.type === "Mesh");
+            raycaster.setFromCamera(mouse, camera);
+            const intersects = raycaster.intersectObjects(selectableObjects);
+            if (intersects.length > 0) {
+                // Limpia selección múltiple visual
+                selectableObjects.forEach(obj => {
+                    if (obj.children.length > 0 && obj.children[0].material) {
+                        obj.children[0].material.color.set(0xffffff);
+                    }
+                    if (obj.material) obj.material.color.set(0x808080);
+                });
+                selectedObjects = [];
+                selectedObject = intersects[0].object;
+                transformControls.attach(selectedObject);
+                transformControls.setMode("translate");
+                updateRotationDisplay();
+                if (selectedObject.geometry) {
+                    selectedObject.geometry.computeBoundingBox();
+                    const bbox = selectedObject.geometry.boundingBox;
+                    document.getElementById("scaleWidth").value = ((bbox.max.x - bbox.min.x) * selectedObject.scale.x).toFixed(2);
+                    document.getElementById("scaleHeight").value = ((bbox.max.y - bbox.min.y) * selectedObject.scale.y).toFixed(2);
+                    document.getElementById("scaleDepth").value = ((bbox.max.z - bbox.min.z) * selectedObject.scale.z).toFixed(2);
+                }
+                // Marca visualmente la selección simple
+                if (selectedObject.children.length > 0 && selectedObject.children[0].material) {
+                    selectedObject.children[0].material.color.set(0x007BFF);
+                }
+                if (selectedObject.material) selectedObject.material.color.set(0x99ccff);
+            }
+        }
+
+
+        transformControls.addEventListener("dragging-changed", (event) => {
+            isDragging = event.value;
+            controls.enabled = !event.value;
+            if (!event.value && selectedObject) {
+                // --- DESAGRUPAR SI ES UN GRUPO ---
+                if (selectedObject.type === "Group" && selectedObject.children.length > 0) {
+                    // Devuelve cada objeto a la escena y ajusta su posición global
+                    const children = [...selectedObject.children];
+                    children.forEach(obj => {
+                        // Calcula la posición global antes de quitar del grupo
+                        const worldPos = obj.getWorldPosition(new THREE.Vector3());
+                        scene.add(obj);
+                        obj.position.copy(worldPos);
+                    });
+                    // Elimina el grupo temporal
+                    scene.remove(selectedObject);
+                    selectedObject = null;
+                    transformControls.detach();
+                    selectedObjects = [];
+                    multiSelectGroup = null;
+                } else {
+                    snapToClosestSnapPoint(selectedObject); // <--- Usa el snap avanzado
+                }
+                saveState();
+            }
+        });
+
+        window.addEventListener("keydown", function (e) {
+            if (e.code === "Space") {
+                if (controls.mouseButtons.LEFT === THREE.MOUSE.ROTATE) {
+                    controls.mouseButtons.LEFT = THREE.MOUSE.PAN;
+                    showToast("Modo PAN activado (arrastrar con botón izquierdo)");
+                } else {
+                    controls.mouseButtons.LEFT = THREE.MOUSE.ROTATE;
+                    showToast("Modo ROTAR activado (arrastrar con botón izquierdo)");
+                }
+            }
+        });
+
+    </script>
+
+    <!-- Agrega esto justo antes de </body> -->
+    <div id="helpModal"
+        style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(24,31,42,0.95);z-index:99999;align-items:center;justify-content:center;">
+        <div
+            style="background:#222e3c;color:#fff;padding:32px 24px;border-radius:12px;max-width:480px;width:90vw;box-shadow:0 4px 32px #000a;position:relative;">
+            <button onclick="document.getElementById('helpModal').style.display='none'"
+                style="position:absolute;top:12px;right:16px;background:none;border:none;color:#fff;font-size:22px;cursor:pointer;">✖</button>
+            <h2 style="margin-top:0;">Ayuda y Controles</h2>
+            <ul style="font-size:16px;line-height:1.7;padding-left:18px;">
+                <li><b>Rotar vista:</b> Arrastra con el botón izquierdo del mouse</li>
+                <li><b>Zoom:</b> Rueda del mouse o pellizca en pantalla táctil</li>
+                <li><b>Desplazar vista:</b> Arrastra con el botón derecho del mouse</li>
+                <li><b>Seleccionar pieza:</b> Haz clic sobre una pieza</li>
+                <li><b>Agregar pieza:</b> Completa dimensiones y nombre, luego pulsa <b>Agregar</b></li>
+                <li><b>Eliminar pieza:</b> Selecciona una pieza y pulsa <b>Eliminar</b> o la tecla <b>Suprimir</b></li>
+                <li><b>Copiar/Pegar pieza:</b> Selecciona una pieza y usa <b>Ctrl+C</b> / <b>Ctrl+V</b> o los botones
+                </li>
+                <li><b>Rotar pieza:</b> Usa los botones de rotación o <b>Rotar libre</b></li>
+                <li><b>Escalar pieza:</b> Usa el control deslizante o los campos de escala</li>
+                <li><b>Aplicar textura:</b> Selecciona una pieza y haz clic en una textura</li>
+                <li><b>Medir:</b> Pulsa <b>📏 Medir</b>, haz clic en dos puntos, ESC para cancelar</li>
+                <li><b>Quitar medición:</b> Doble clic en la escena</li>
+                <li><b>Quitar textura:</b> Doble clic en la galería de texturas</li>
+                <li><b>Deshacer/Rehacer:</b> Usa los botones ↩️ / ↪️</li>
+                <li><b>Exportar:</b> Usa los botones para exportar proyecto, medidas o imagen</li>
+                <li><b>Importar:</b> Usa el botón para cargar un archivo STL</li>
+                <li><b>Quitar medición:</b> Doble clic en la escena</li>
+                <li><b>Quitar textura:</b> Doble clic en la galería de texturas</li>
+            </ul>
+            <div style="margin-top:18px;font-size:13px;color:#aaa;">¿Necesitas más ayuda? Contáctanos:
+                soporte@impormaderas.com</div>
+        </div>
+    </div>
+
+</body>
+
+</html>
