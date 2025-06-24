@@ -1,0 +1,1214 @@
+/* =====================
+   MEJORAS VISUALES 2025
+   ===================== */
+:root {
+    --main-bg: #181f2a;
+    --menu-bg: #2C3E50;
+    --accent: #27AE60;
+    --accent-dark: #1F8A4D;
+    --white: #fff;
+    --gray: #808080;
+    --blue: #007BFF;
+    --blue-dark: #0056b3;
+    --border-radius: 10px;
+    --shadow: 0 4px 24px #0002, 0 1.5px 4px #0001;
+    --transition: 0.25s cubic-bezier(.4, 2, .6, 1);
+    --font-main: 'Segoe UI', 'Roboto', Arial, sans-serif;
+}
+
+body {
+    font-family: var(--font-main);
+    background: var(--main-bg);
+    color: var(--white);
+    letter-spacing: 0.01em;
+}
+
+button,
+.custom-upload-btn {
+    display: inline-block;
+    padding: 12px 22px;
+    margin: 10px 0;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--white);
+    background: linear-gradient(90deg, var(--accent), var(--accent-dark));
+    border: none;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    cursor: pointer;
+    transition: background var(--transition), box-shadow var(--transition), transform var(--transition);
+    outline: none;
+    position: relative;
+    overflow: hidden;
+}
+
+button:hover,
+.custom-upload-btn:hover {
+    background: linear-gradient(90deg, #2ee88b, #1F8A4D 90%);
+    box-shadow: 0 8px 32px #27ae6040, 0 2px 8px #0002;
+    transform: translateY(-2px) scale(1.04);
+}
+
+button:active,
+.custom-upload-btn:active {
+    background: linear-gradient(90deg, #1F8A4D, #27AE60 90%);
+    transform: scale(0.98);
+}
+
+input,
+select {
+    border-radius: var(--border-radius);
+    border: 1.5px solid #2ee88b44;
+    background: #232c3b;
+    color: var(--white);
+    padding: 8px 12px;
+    font-size: 15px;
+    margin-top: 5px;
+    margin-bottom: 10px;
+    box-shadow: 0 1.5px 4px #0001;
+    transition: border var(--transition), box-shadow var(--transition);
+}
+
+input:focus,
+select:focus {
+    border: 1.5px solid var(--accent);
+    box-shadow: 0 2px 8px #27ae6040;
+    outline: none;
+}
+
+#menu,
+#rotation-controls {
+    border-radius: 0 0 var(--border-radius) var(--border-radius);
+    box-shadow: var(--shadow);
+}
+
+#scene-container {
+    border-radius: var(--border-radius);
+    box-shadow: 0 8px 32px #0003;
+}
+
+#model-actions {
+    background: rgba(44, 62, 80, 0.97);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+}
+
+#model-actions button {
+    border-radius: 8px;
+    background: linear-gradient(90deg, var(--blue), var(--blue-dark));
+    color: #fff;
+    font-weight: 600;
+    box-shadow: 0 2px 8px #007bff33;
+}
+
+#model-actions button:hover {
+    background: linear-gradient(90deg, #3faaff, #0056b3 90%);
+}
+
+#textureGallery button,
+#customTextureGallery button {
+    width: 25px;
+    /* Reducir el ancho */
+    height: 25px;
+    /* Reducir la altura */
+    padding: 5px;
+    /* Ajustar el relleno */
+    border-radius: 50%;
+    /* Mantener la forma circular */
+    background-color: #FF4444;
+    /* Mantener el color rojo */
+    border: 2px solid #27AE60;
+    /* Mantener el borde */
+    box-shadow: 0 2px 8px #0002;
+    /* Mantener el efecto de sombra */
+    transition: border var(--transition), box-shadow var(--transition), transform var(--transition);
+}
+
+#textureGallery button:hover,
+#customTextureGallery button:hover {
+    border: 2px solid #ffd700;
+    box-shadow: 0 4px 16px #27ae6044;
+    transform: scale(1.08);
+}
+
+#scale-controls {
+    background: rgba(39, 43, 59, 0.97);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+}
+
+#toast {
+    background: #232c3b;
+    color: #fff;
+    border-radius: var(--border-radius);
+    box-shadow: 0 2px 8px #27ae6040;
+    font-size: 17px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    padding: 16px 32px;
+    animation: fadeInOut 1.5s;
+}
+
+@keyframes fadeInOut {
+    0% {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    10% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    90% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    100% {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+}
+
+h3,
+h2,
+h1 {
+    font-family: var(--font-main);
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    color: #fff;
+}
+
+/* Tarjetas y paneles */
+.panel,
+.card {
+    background: #232c3b;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    padding: 18px 20px;
+    margin-bottom: 18px;
+}
+
+::-webkit-scrollbar {
+    width: 8px;
+    background: #232c3b;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #27ae6040;
+    border-radius: 8px;
+}
+
+/* Fin mejoras visuales */
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    display: flex;
+    background: var(--main-bg);
+}
+
+#menu,
+#rotation-controls {
+    position: fixed;
+    top: 0;
+    background: var(--menu-bg);
+    color: var(--white);
+    padding: 15px;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.3);
+    z-index: 100;
+    overflow-y: auto;
+}
+
+#menu {
+    left: 0;
+    width: 200px;
+    height: 90vh;
+}
+
+#rotation-controls {
+    right: 0;
+    width: 220px;
+    height: 89vh;
+    border-left: 2px solid #222e3c;
+    z-index: 101;
+}
+
+#scene-container {
+    flex-grow: 1;
+    margin-left: 220px;
+    height: 100vh;
+    background: var(--main-bg);
+    position: relative;
+}
+
+h3 {
+    font-size: 16px;
+    margin: 18px 0 8px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+    padding-bottom: 4px;
+}
+
+label {
+    display: block;
+    margin-top: 10px;
+    font-size: 14px;
+}
+
+input,
+select {
+    width: 100%;
+    padding: 5px;
+    margin-top: 5px;
+    border-radius: var(--border-radius);
+    border: none;
+    font-size: 14px;
+}
+
+input[type="number"] {
+    width: 80px;
+    min-width: 60px;
+    max-width: 120px;
+    text-align: center;
+}
+
+input[type="file"] {
+    display: none;
+}
+
+button {
+    display: block;
+    width: 100%;
+    margin: 10px 0;
+    padding: 10px;
+    font-size: 14px;
+    font-weight: bold;
+    color: var(--white);
+    background: linear-gradient(45deg, var(--accent), #298b54);
+    border: none;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+button:hover {
+    background: linear-gradient(45deg, var(--accent-dark), #0E4021);
+    transform: scale(1.05);
+}
+
+button:active {
+    transform: scale(0.95);
+}
+
+#model-actions {
+    position: fixed;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(44, 62, 80, 0.9);
+    padding: 10px;
+    border-radius: 8px;
+    display: flex;
+    gap: 10px;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3);
+    z-index: 101;
+}
+
+#model-actions button {
+    width: auto;
+    padding: 10px 15px;
+    background: linear-gradient(45deg, var(--accent), var(--accent-dark));
+}
+
+#textureGallery {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    max-width: 180px;
+}
+
+#textureGallery button {
+    width: 44px;
+    height: 44px;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#scale-controls {
+    position: fixed;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(39, 43, 59, 0.9);
+    padding: 10px 15px;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    text-align: center;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: nowrap;
+    white-space: nowrap;
+    z-index: 101;
+}
+
+#fixed-note {
+    position: fixed;
+    bottom: 10px;
+    left: 250px;
+    color: var(--white);
+    background: rgba(30, 30, 30, 0.7);
+    font-size: 12px;
+    padding: 6px 16px;
+    border-radius: var(--border-radius);
+    z-index: 99999;
+    pointer-events: none;
+    line-height: 1.5;
+}
+
+#toast {
+    display: none;
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #222e3c;
+    color: var(--white);
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-size: 16px;
+    z-index: 9999;
+    box-shadow: 0 2px 8px #0008;
+}
+
+/* Modal ayuda */
+#helpModal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(24, 31, 42, 0.95);
+    z-index: 99999;
+    align-items: center;
+    justify-content: center;
+}
+
+#helpModal>div {
+    background: #222e3c;
+    color: var(--white);
+    padding: 32px 24px;
+    border-radius: 12px;
+    max-width: 480px;
+    width: 90vw;
+    box-shadow: 0 4px 32px #000a;
+    position: relative;
+}
+
+#helpModal h2 {
+    margin-top: 0;
+}
+
+#helpModal ul {
+    font-size: 16px;
+    line-height: 1.7;
+    padding-left: 18px;
+}
+
+#helpModal li {
+    margin-bottom: 8px;
+}
+
+#helpModal button {
+    position: absolute;
+    top: 12px;
+    right: 16px;
+    background: none;
+    border: none;
+    color: var(--white);
+    font-size: 22px;
+    cursor: pointer;
+}
+
+#helpModal div.contact {
+    margin-top: 18px;
+    font-size: 13px;
+    color: #aaa;
+}
+
+/* Hide duplicate button styles */
+#rotation-controls button,
+#model-actions button,
+#scale-controls button {
+    width: 100%;
+}
+
+/* Visual para input de textura personalizada */
+#customTexturePanel label[for="customTextureInput"] {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+    color: #fff;
+}
+
+#customTexturePanel input[type="file"]+label,
+#customTexturePanel .custom-upload-btn {
+    display: inline-block;
+    background: linear-gradient(45deg, #27AE60, #298b54);
+    color: #fff;
+    padding: 8px 18px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    margin-bottom: 8px;
+    margin-top: 6px;
+    transition: background 0.2s, transform 0.2s;
+}
+
+#customTexturePanel input[type="file"]+label:hover,
+#customTexturePanel .custom-upload-btn:hover {
+    background: linear-gradient(45deg, #1F8A4D, #0E4021);
+    transform: scale(1.05);
+}
+
+/* Galería de texturas personalizadas */
+#customTextureGallery button {
+    border: 2px solid #27AE60;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px #0004;
+    transition: border 0.2s, box-shadow 0.2s, transform 0.2s;
+    position: relative;
+    overflow: hidden;
+}
+
+#customTextureGallery button:hover {
+    border: 2px solid #ffd700;
+    box-shadow: 0 4px 16px #27ae6044;
+    transform: scale(1.08);
+}
+
+#customTextureGallery button .delete-icon {
+    display: none;
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    background: #222e3cdd;
+    border-radius: 50%;
+    font-size: 16px;
+    pointer-events: none;
+    z-index: 2;
+}
+
+#customTextureGallery button:hover .delete-icon {
+    display: block;
+}
+
+/* =====================
+           TEXTURAS PERSONALIZADAS
+           ===================== */
+
+/* Ocultar el input de archivo real */
+#customTextureInput {
+    display: none !important;
+}
+
+/* Estilo para el botón personalizado de subir archivo */
+.custom-upload-btn {
+    display: inline-block;
+    background: linear-gradient(45deg, #27AE60, #1F8A4D);
+    color: #fff;
+    padding: 10px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 14px;
+    border: none;
+    margin-top: 6px;
+    margin-bottom: 10px;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(39, 174, 96, 0.3);
+}
+
+.custom-upload-btn:hover {
+    background: linear-gradient(45deg, #2ECC71, #27AE60);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(39, 174, 96, 0.4);
+}
+
+.custom-upload-btn:active {
+    transform: translateY(0);
+}
+
+/* Panel de texturas personalizadas */
+#customTexturePanel {
+    background: rgba(52, 73, 94, 0.3);
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 10px;
+    border: 1px solid rgba(39, 174, 96, 0.2);
+}
+
+#customTexturePanel h3 {
+    margin-top: 0;
+    color: #27AE60;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+/* Galería de texturas personalizadas en el panel */
+#customTextureGallery {
+    max-height: 120px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #27AE60 #2C3E50;
+}
+
+#customTextureGallery::-webkit-scrollbar {
+    width: 6px;
+}
+
+#customTextureGallery::-webkit-scrollbar-track {
+    background: #2C3E50;
+    border-radius: 3px;
+}
+
+#customTextureGallery::-webkit-scrollbar-thumb {
+    background: #27AE60;
+    border-radius: 3px;
+}
+
+#customTextureGallery::-webkit-scrollbar-thumb:hover {
+    background: #2ECC71;
+}
+
+/* Contenedor de textura individual */
+#customTextureGallery>div {
+    position: relative;
+    display: inline-block;
+    margin: 2px;
+}
+
+/* Botones de textura */
+#customTextureGallery button {
+    background-size: cover !important;
+    background-position: center !important;
+    background-repeat: no-repeat !important;
+    border: 2px solid #444;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+}
+
+#customTextureGallery button:hover {
+    border-color: #27AE60;
+    transform: scale(1.05);
+    box-shadow: 0 2px 12px rgba(39, 174, 96, 0.4);
+}
+
+/* Botón de eliminar textura */
+#customTextureGallery .delete-btn {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #e74c3c;
+    color: white;
+    border: none;
+    font-size: 10px;
+    line-height: 14px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    transition: all 0.2s ease;
+}
+
+#customTextureGallery .delete-btn:hover {
+    background: #c0392b;
+    transform: scale(1.1);
+}
+
+/* Mensaje cuando no hay texturas */
+#customTextureGallery div[style*="color: #999"] {
+    text-align: center;
+    font-style: italic;
+    padding: 20px;
+}
+
+#background-controls {
+    background: rgba(44, 62, 80, 0.97);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    padding: 12px;
+    margin-bottom: 10px;
+}
+
+#background-controls h3 {
+    color: var(--white);
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+#background-controls button {
+    background: linear-gradient(90deg, #e74c3c, #c0392b);
+    color: var(--white);
+    border-radius: var(--border-radius);
+    padding: 8px 12px;
+    margin-top: 6px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+#background-controls button:hover {
+    background: linear-gradient(45deg, #c0392b, #a93226);
+}
+
+#backgroundPanel {
+    background: rgba(52, 73, 94, 0.3);
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 10px;
+    border: 1px solid rgba(39, 174, 96, 0.2);
+}
+
+#backgroundPanel h3 {
+    margin-top: 0;
+    color: #27AE60;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+#backgroundPanel label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+    color: #fff;
+}
+
+#backgroundPanel input[type="file"] {
+    margin-bottom: 10px;
+}
+
+#backgroundPanel button {
+    background: linear-gradient(45deg, #e74c3c, #c0392b);
+    color: #fff;
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    border: none;
+    transition: all 0.3s ease;
+}
+
+#backgroundPanel button:hover {
+    background: linear-gradient(45deg, #c0392b, #a93226);
+}
+
+#skyboxPanel {
+    background: rgba(52, 73, 94, 0.3);
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 10px;
+    border: 1px solid rgba(39, 174, 96, 0.2);
+}
+
+#skyboxPanel h3 {
+    margin-top: 0;
+    color: #27AE60;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+#skyboxPanel button {
+    background: linear-gradient(45deg, #3498db, #2980b9);
+    color: #fff;
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    border: none;
+    transition: all 0.3s ease;
+}
+
+#skyboxPanel button:hover {
+    background: linear-gradient(45deg, #2980b9, #1f618d);
+}
+
+/* Agrega esto a tu style.css */
+.archivos-lista div {
+    padding-left: 8px;
+    border-left: 1px solid #444;
+    margin-bottom: 2px;
+}
+
+.predetermined-module-item {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 15px;
+    margin: 10px 0;
+    background-color: #f9f9f9;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.module-info h4 {
+    margin: 0 0 5px 0;
+    color: #333;
+}
+
+.module-info p {
+    margin: 2px 0;
+    font-size: 12px;
+    color: #666;
+}
+
+.load-model-btn {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.load-model-btn:hover {
+    background-color: #45a049;
+}
+
+/* Biblioteca SKP */
+.skp-library-section {
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    margin: 20px 0;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.skp-library-section h3 {
+    margin: 0 0 15px 0;
+    color: #333;
+    border-bottom: 2px solid #4CAF50;
+    padding-bottom: 10px;
+}
+
+#skp-library-container {
+    max-height: 600px;
+    overflow-y: auto;
+    border: 1px solid #e0e0e0;
+    border-radius: 5px;
+    padding: 15px;
+}
+
+.skp-category {
+    margin-bottom: 20px;
+}
+
+.skp-category-header {
+    background: #f5f5f5;
+    padding: 10px;
+    margin: 0 0 10px 0;
+    border-radius: 5px;
+    color: #555;
+    font-size: 16px;
+    border-left: 4px solid #4CAF50;
+}
+
+.skp-files-list {
+    margin-left: 15px;
+}
+
+.skp-file-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px;
+    margin: 8px 0;
+    background: #fafafa;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+}
+
+.skp-file-item:hover {
+    background: #f0f0f0;
+    border-color: #4CAF50;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.skp-file-info {
+    flex-grow: 1;
+}
+
+.skp-file-name {
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 5px;
+}
+
+.skp-file-details {
+    font-size: 12px;
+    color: #666;
+}
+
+.skp-file-size {
+    background: #e3f2fd;
+    padding: 2px 6px;
+    border-radius: 3px;
+    margin-right: 10px;
+}
+
+.skp-file-path {
+    font-family: monospace;
+    background: #f5f5f5;
+    padding: 2px 6px;
+    border-radius: 3px;
+}
+
+.skp-file-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.btn-load-skp, .btn-preview-skp {
+    padding: 8px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    transition: all 0.3s ease;
+}
+
+.btn-load-skp {
+    background: #4CAF50;
+    color: white;
+}
+
+.btn-load-skp:hover {
+    background: #45a049;
+}
+
+.btn-preview-skp {
+    background: #2196F3;
+    color: white;
+}
+
+.btn-preview-skp:hover {
+    background: #1976D2;
+}
+
+#refresh-skp-library {
+    background: #FF9800;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 15px;
+}
+
+#refresh-skp-library:hover {
+    background: #F57C00;
+}
+
+/* Modal de vista previa */
+.skp-preview-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;
+}
+
+.skp-preview-content {
+    background: white;
+    border-radius: 10px;
+    padding: 20px;
+    max-width: 400px;
+    width: 90%;
+}
+
+.skp-preview-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.skp-preview-close {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #666;
+}
+
+.skp-preview-container {
+    width: 100%;
+    height: 300px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.skp-preview-actions {
+    text-align: center;
+}
+
+.btn-load-from-preview {
+    background: #4CAF50;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+/* Indicador de carga */
+#skp-loading-indicator {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255,255,255,0.9);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+.loading-content {
+    text-align: center;
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+}
+
+.loading-spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #4CAF50;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 15px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.loading-progress {
+    width: 200px;
+    height: 6px;
+    background: #f0f0f0;
+    border-radius: 3px;
+    margin: 15px auto 0;
+    overflow: hidden;
+}
+
+.progress-bar {
+    height: 100%;
+    background: #4CAF50;
+    width: 0%;
+    transition: width 0.3s ease;
+}
+
+/* Notificaciones */
+.skp-notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 15px 20px;
+    border-radius: 5px;
+    color: white;
+    z-index: 10001;
+    animation: slideIn 0.3s ease;
+}
+
+.skp-notification.success {
+    background: #4CAF50;
+}
+
+.skp-notification.error {
+    background: #f44336;
+}
+
+.skp-notification.info {
+    background: #2196F3;
+}
+
+@keyframes slideIn {
+    from { transform: translateX(100%); }
+    to { transform: translateX(0); }
+}
+
+#modulosTree {
+    font-size: 15px;
+    color: #fff;
+    padding-left: 0;
+    margin-bottom: 12px;
+}
+
+#modulosTree details {
+    margin-bottom: 4px;
+    margin-left: 0;
+    background: none;
+    border-radius: 6px;
+    transition: background 0.2s;
+}
+
+#modulosTree details[open] > summary {
+    background: #22384a;
+    color: #2ecc71;
+}
+
+#modulosTree summary {
+    list-style: none;
+    cursor: pointer;
+    font-weight: 600;
+    padding: 6px 8px 6px 28px;
+    border-radius: 6px;
+    position: relative;
+    transition: background 0.2s, color 0.2s;
+    margin-bottom: 2px;
+    user-select: none;
+}
+
+#modulosTree summary::before {
+    content: "📂";
+    position: absolute;
+    left: 6px;
+    top: 6px;
+    font-size: 16px;
+    transition: color 0.2s;
+}
+
+#modulosTree details[open] > summary::before {
+    content: "📁";
+    color: #2ecc71;
+}
+
+#modulosTree button.stl-file-btn {
+    display: block;
+    width: 92%;
+    margin: 4px auto 4px 28px;
+    background: #2ecc71;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 6px 8px 6px 28px;
+    text-align: left;
+    cursor: pointer;
+    font-size: 14px;
+    position: relative;
+    transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+    box-shadow: 0 1px 4px #0002;
+}
+
+#modulosTree button.stl-file-btn::before {
+    content: "📄";
+    position: absolute;
+    left: 8px;
+    top: 6px;
+    font-size: 15px;
+    opacity: 0.8;
+}
+
+#modulosTree button.stl-file-btn:hover {
+    background: #27ae60;
+    color: #fff;
+    box-shadow: 0 2px 8px #27ae6040;
+    transform: translateX(2px) scale(1.03);
+}
+
+.folder-item, .file-item {
+    cursor: pointer;
+    padding: 2px 0;
+    display: flex;
+    align-items: center;
+}
+.folder-item:hover, .file-item:hover {
+    background: #2a3b4d;
+    border-radius: 4px;
+}
+.folder-icon, .file-icon {
+    margin-right: 6px;
+}
+
+#moduloGallery {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 10px;
+    transition: max-height 0.3s;
+}
+
+.modulo-card {
+    background: #232c3b;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px #27ae6040;
+    padding: 16px 18px;
+    min-width: 160px;
+    max-width: 180px;
+    color: #fff;
+    font-weight: 600;
+    font-size: 15px;
+    text-align: center;
+    cursor: pointer;
+    border: 2px solid #27ae60;
+    transition: background 0.2s, transform 0.15s, border 0.2s;
+    position: relative;
+    margin-bottom: 4px;
+}
+
+.modulo-card:hover {
+    background: #27ae60;
+    color: #fff;
+    transform: scale(1.04);
+    border: 2px solid #ffd700;
+}
+
+#toggleModuloGalleryBtn {
+    margin-bottom: 8px;
+    background: #1F8A4D;
+    border-radius: 8px;
+    color: #fff;
+    font-weight: 700;
+    padding: 8px 18px;
+    cursor: pointer;
+    border: none;
+    box-shadow: 0 2px 8px #27ae6040;
+    transition: background 0.2s, transform 0.15s;
+}
+
+#toggleModuloGalleryBtn:hover {
+    background: #27ae60;
+    transform: scale(1.04);
+}
+
+/* Elimina la barra de desplazamiento horizontal global */
+html, body {
+  overflow-x: hidden !important;
+}
